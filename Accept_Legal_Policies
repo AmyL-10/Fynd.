@@ -1,0 +1,787 @@
+import '/flutter_flow/flutter_flow_theme.dart';
+import '/flutter_flow/flutter_flow_util.dart';
+import '/flutter_flow/flutter_flow_widgets.dart';
+import '/fynd/components/custom_ui_elements/close/close_widget.dart';
+import '/fynd/legal_policies/data_usage_consent_component/data_usage_consent_component_widget.dart';
+import '/fynd/legal_policies/disclaimer/disclaimer_widget.dart';
+import '/fynd/legal_policies/popia/popia_widget.dart';
+import '/fynd/legal_policies/terms_and_conditions/terms_and_conditions_widget.dart';
+import 'dart:ui';
+import '/index.dart';
+import 'package:flutter/gestures.dart';
+import 'package:flutter/material.dart';
+import 'package:flutter_spinkit/flutter_spinkit.dart';
+import 'package:google_fonts/google_fonts.dart';
+import 'package:provider/provider.dart';
+import 'package:url_launcher/url_launcher.dart';
+
+import 'accept_legal_policies_model.dart';
+export 'accept_legal_policies_model.dart';
+
+class AcceptLegalPoliciesWidget extends StatefulWidget {
+  const AcceptLegalPoliciesWidget({super.key});
+
+  static String routeName = 'accept_legal_policies';
+  static String routePath = 'acceptLegalPolicies';
+
+  @override
+  State<AcceptLegalPoliciesWidget> createState() =>
+      _AcceptLegalPoliciesWidgetState();
+}
+
+class _AcceptLegalPoliciesWidgetState extends State<AcceptLegalPoliciesWidget> {
+  late AcceptLegalPoliciesModel _model;
+
+  final scaffoldKey = GlobalKey<ScaffoldState>();
+
+  @override
+  void initState() {
+    super.initState();
+    _model = createModel(context, () => AcceptLegalPoliciesModel());
+
+    WidgetsBinding.instance.addPostFrameCallback((_) => safeSetState(() {}));
+  }
+
+  @override
+  void dispose() {
+    _model.dispose();
+
+    super.dispose();
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return Title(
+        title: 'accept_legal_policies',
+        color: FlutterFlowTheme.of(context).primary.withAlpha(0XFF),
+        child: GestureDetector(
+          onTap: () {
+            FocusScope.of(context).unfocus();
+            FocusManager.instance.primaryFocus?.unfocus();
+          },
+          child: Scaffold(
+            key: scaffoldKey,
+            backgroundColor: FlutterFlowTheme.of(context).primaryBackground,
+            endDrawer: Container(
+              width: MediaQuery.sizeOf(context).width,
+              child: Drawer(
+                elevation: 16,
+                child: Padding(
+                  padding: EdgeInsetsDirectional.fromSTEB(12, 12, 12, 24),
+                  child: Column(
+                    mainAxisSize: MainAxisSize.max,
+                    children: [
+                      Row(
+                        mainAxisSize: MainAxisSize.max,
+                        mainAxisAlignment: MainAxisAlignment.end,
+                        children: [
+                          Expanded(
+                            child: wrapWithModel(
+                              model: _model.closeModel,
+                              updateCallback: () => safeSetState(() {}),
+                              child: CloseWidget(),
+                            ),
+                          ),
+                        ],
+                      ),
+                      Flexible(
+                        child: SingleChildScrollView(
+                          controller: _model.columnController,
+                          child: Column(
+                            mainAxisSize: MainAxisSize.max,
+                            children: [
+                              Builder(
+                                builder: (context) {
+                                  if (_model.selectedTab == 'popia') {
+                                    return wrapWithModel(
+                                      model: _model.popiaModel,
+                                      updateCallback: () => safeSetState(() {}),
+                                      child: PopiaWidget(),
+                                    );
+                                  } else if (_model.selectedTab == 'tCs') {
+                                    return wrapWithModel(
+                                      model: _model.termsAndConditionsModel,
+                                      updateCallback: () => safeSetState(() {}),
+                                      child: TermsAndConditionsWidget(),
+                                    );
+                                  } else if (_model.selectedTab == 'data') {
+                                    return wrapWithModel(
+                                      model:
+                                          _model.dataUsageConsentComponentModel,
+                                      updateCallback: () => safeSetState(() {}),
+                                      child: DataUsageConsentComponentWidget(),
+                                    );
+                                  } else {
+                                    return wrapWithModel(
+                                      model: _model.disclaimerModel,
+                                      updateCallback: () => safeSetState(() {}),
+                                      child: DisclaimerWidget(),
+                                    );
+                                  }
+                                },
+                              ),
+                            ],
+                          ),
+                        ),
+                      ),
+                    ],
+                  ),
+                ),
+              ),
+            ),
+            body: SafeArea(
+              top: true,
+              child: Align(
+                alignment: AlignmentDirectional(0, 0),
+                child: Padding(
+                  padding: EdgeInsetsDirectional.fromSTEB(12, 24, 12, 24),
+                  child: Column(
+                    mainAxisSize: MainAxisSize.max,
+                    mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                    children: [
+                      Column(
+                        mainAxisSize: MainAxisSize.max,
+                        children: [
+                          Align(
+                            alignment: AlignmentDirectional(-1, 0),
+                            child: Text(
+                              'Legal Policies',
+                              textAlign: TextAlign.start,
+                              style: FlutterFlowTheme.of(context)
+                                  .displaySmall
+                                  .override(
+                                    font: GoogleFonts.bricolageGrotesque(
+                                      fontWeight: FlutterFlowTheme.of(context)
+                                          .displaySmall
+                                          .fontWeight,
+                                      fontStyle: FlutterFlowTheme.of(context)
+                                          .displaySmall
+                                          .fontStyle,
+                                    ),
+                                    letterSpacing: 0.0,
+                                    fontWeight: FlutterFlowTheme.of(context)
+                                        .displaySmall
+                                        .fontWeight,
+                                    fontStyle: FlutterFlowTheme.of(context)
+                                        .displaySmall
+                                        .fontStyle,
+                                  ),
+                            ),
+                          ),
+                          Align(
+                            alignment: AlignmentDirectional(-1, 0),
+                            child: RichText(
+                              textScaler: MediaQuery.of(context).textScaler,
+                              text: TextSpan(
+                                children: [
+                                  TextSpan(
+                                    text:
+                                        'Fynd is a technology platform only.\n\nWe:\n',
+                                    style: FlutterFlowTheme.of(context)
+                                        .bodyMedium
+                                        .override(
+                                          font: GoogleFonts.notoSansJp(
+                                            fontWeight:
+                                                FlutterFlowTheme.of(context)
+                                                    .bodyMedium
+                                                    .fontWeight,
+                                            fontStyle:
+                                                FlutterFlowTheme.of(context)
+                                                    .bodyMedium
+                                                    .fontStyle,
+                                          ),
+                                          letterSpacing: 0.0,
+                                          fontWeight:
+                                              FlutterFlowTheme.of(context)
+                                                  .bodyMedium
+                                                  .fontWeight,
+                                          fontStyle:
+                                              FlutterFlowTheme.of(context)
+                                                  .bodyMedium
+                                                  .fontStyle,
+                                        ),
+                                  ),
+                                  TextSpan(
+                                    text:
+                                        '● Do not provide services directly\n● Do not employ providers\n● Do not guarantee outcomes or safety\n',
+                                    style: TextStyle(),
+                                  ),
+                                  TextSpan(
+                                    text:
+                                        '\nAll interactions, transactions, and engagements occur at your own risk.\n\nUsers are expected to:\n',
+                                    style: TextStyle(),
+                                  ),
+                                  TextSpan(
+                                    text:
+                                        '● Exercise caution\n● Verify details independently\n● Use sound judgment\n',
+                                    style: TextStyle(),
+                                  ),
+                                  TextSpan(
+                                    text:
+                                        '\nBy using Fynd, you accept full responsibility for any engagement facilitated through the platform.\n',
+                                    style: TextStyle(),
+                                  ),
+                                  TextSpan(
+                                    text:
+                                        '\nShould you have any questions, complaints, or requests, please contact: ',
+                                    style: TextStyle(),
+                                  ),
+                                  TextSpan(
+                                    text: 'info@fynd.co.za\n',
+                                    style: TextStyle(
+                                      color:
+                                          FlutterFlowTheme.of(context).primary,
+                                      fontWeight: FontWeight.w600,
+                                    ),
+                                    mouseCursor: SystemMouseCursors.click,
+                                    recognizer: TapGestureRecognizer()
+                                      ..onTap = () async {
+                                        await launchUrl(Uri(
+                                            scheme: 'mailto',
+                                            path: 'buddyappza@gmail.com',
+                                            query: {
+                                              'subject':
+                                                  'Query regarding Disclaimer',
+                                              'body':
+                                                  'I have a query regarding the Disclaimer',
+                                            }
+                                                .entries
+                                                .map((MapEntry<String, String>
+                                                        e) =>
+                                                    '${Uri.encodeComponent(e.key)}=${Uri.encodeComponent(e.value)}')
+                                                .join('&')));
+                                      },
+                                  )
+                                ],
+                                style: FlutterFlowTheme.of(context)
+                                    .bodyMedium
+                                    .override(
+                                      font: GoogleFonts.notoSansJp(
+                                        fontWeight: FlutterFlowTheme.of(context)
+                                            .bodyMedium
+                                            .fontWeight,
+                                        fontStyle: FlutterFlowTheme.of(context)
+                                            .bodyMedium
+                                            .fontStyle,
+                                      ),
+                                      letterSpacing: 0.0,
+                                      fontWeight: FlutterFlowTheme.of(context)
+                                          .bodyMedium
+                                          .fontWeight,
+                                      fontStyle: FlutterFlowTheme.of(context)
+                                          .bodyMedium
+                                          .fontStyle,
+                                    ),
+                              ),
+                            ),
+                          ),
+                        ].divide(SizedBox(height: 12)),
+                      ),
+                      Divider(
+                        thickness: 2,
+                        color: FlutterFlowTheme.of(context).alternate,
+                      ),
+                      Flexible(
+                        child: Container(
+                          decoration: BoxDecoration(),
+                          child: Column(
+                            mainAxisSize: MainAxisSize.min,
+                            children: [
+                              Row(
+                                mainAxisSize: MainAxisSize.max,
+                                children: [
+                                  Theme(
+                                    data: ThemeData(
+                                      checkboxTheme: CheckboxThemeData(
+                                        visualDensity: VisualDensity.compact,
+                                        materialTapTargetSize:
+                                            MaterialTapTargetSize.shrinkWrap,
+                                        shape: RoundedRectangleBorder(
+                                          borderRadius:
+                                              BorderRadius.circular(4),
+                                        ),
+                                      ),
+                                      unselectedWidgetColor:
+                                          FlutterFlowTheme.of(context)
+                                              .secondary,
+                                    ),
+                                    child: Checkbox(
+                                      value: _model.checkboxValue1 ??= false,
+                                      onChanged: (newValue) async {
+                                        safeSetState(() =>
+                                            _model.checkboxValue1 = newValue!);
+                                        if (newValue!) {
+                                          _model.acceptTCs = true;
+                                          safeSetState(() {});
+                                        }
+                                      },
+                                      side: (FlutterFlowTheme.of(context)
+                                                  .secondary !=
+                                              null)
+                                          ? BorderSide(
+                                              width: 2,
+                                              color:
+                                                  FlutterFlowTheme.of(context)
+                                                      .secondary!,
+                                            )
+                                          : null,
+                                      activeColor:
+                                          FlutterFlowTheme.of(context).primary,
+                                      checkColor:
+                                          FlutterFlowTheme.of(context).info,
+                                    ),
+                                  ),
+                                  InkWell(
+                                    splashColor: Colors.transparent,
+                                    focusColor: Colors.transparent,
+                                    hoverColor: Colors.transparent,
+                                    highlightColor: Colors.transparent,
+                                    onTap: () async {
+                                      _model.selectedTab = 'tCs';
+                                      safeSetState(() {});
+                                      scaffoldKey.currentState!.openEndDrawer();
+                                    },
+                                    child: Row(
+                                      mainAxisSize: MainAxisSize.max,
+                                      mainAxisAlignment:
+                                          MainAxisAlignment.spaceBetween,
+                                      children: [
+                                        Text(
+                                          'I accept the Terms & Conditions',
+                                          style: FlutterFlowTheme.of(context)
+                                              .bodyMedium
+                                              .override(
+                                                font: GoogleFonts.notoSansJp(
+                                                  fontWeight: FontWeight.w500,
+                                                  fontStyle:
+                                                      FlutterFlowTheme.of(
+                                                              context)
+                                                          .bodyMedium
+                                                          .fontStyle,
+                                                ),
+                                                color:
+                                                    FlutterFlowTheme.of(context)
+                                                        .primaryText,
+                                                fontSize: 14,
+                                                letterSpacing: 0.0,
+                                                fontWeight: FontWeight.w500,
+                                                fontStyle:
+                                                    FlutterFlowTheme.of(context)
+                                                        .bodyMedium
+                                                        .fontStyle,
+                                              ),
+                                        ),
+                                        Icon(
+                                          Icons.arrow_outward,
+                                          color: FlutterFlowTheme.of(context)
+                                              .primaryText,
+                                          size: 24,
+                                        ),
+                                      ].divide(SizedBox(width: 12)),
+                                    ),
+                                  ),
+                                ],
+                              ),
+                              Row(
+                                mainAxisSize: MainAxisSize.max,
+                                children: [
+                                  Theme(
+                                    data: ThemeData(
+                                      checkboxTheme: CheckboxThemeData(
+                                        visualDensity: VisualDensity.compact,
+                                        materialTapTargetSize:
+                                            MaterialTapTargetSize.shrinkWrap,
+                                        shape: RoundedRectangleBorder(
+                                          borderRadius:
+                                              BorderRadius.circular(4),
+                                        ),
+                                      ),
+                                      unselectedWidgetColor:
+                                          FlutterFlowTheme.of(context)
+                                              .secondary,
+                                    ),
+                                    child: Checkbox(
+                                      value: _model.checkboxValue2 ??= false,
+                                      onChanged: (newValue) async {
+                                        safeSetState(() =>
+                                            _model.checkboxValue2 = newValue!);
+                                        if (newValue!) {
+                                          _model.acceptPOPIA = true;
+                                          safeSetState(() {});
+                                        }
+                                      },
+                                      side: (FlutterFlowTheme.of(context)
+                                                  .secondary !=
+                                              null)
+                                          ? BorderSide(
+                                              width: 2,
+                                              color:
+                                                  FlutterFlowTheme.of(context)
+                                                      .secondary!,
+                                            )
+                                          : null,
+                                      activeColor:
+                                          FlutterFlowTheme.of(context).primary,
+                                      checkColor:
+                                          FlutterFlowTheme.of(context).info,
+                                    ),
+                                  ),
+                                  InkWell(
+                                    splashColor: Colors.transparent,
+                                    focusColor: Colors.transparent,
+                                    hoverColor: Colors.transparent,
+                                    highlightColor: Colors.transparent,
+                                    onTap: () async {
+                                      _model.selectedTab = 'popia';
+                                      safeSetState(() {});
+                                      scaffoldKey.currentState!.openEndDrawer();
+                                    },
+                                    child: Row(
+                                      mainAxisSize: MainAxisSize.max,
+                                      children: [
+                                        Text(
+                                          'I accept the Privacy Policy (POPIA)',
+                                          style: FlutterFlowTheme.of(context)
+                                              .bodyMedium
+                                              .override(
+                                                font: GoogleFonts.notoSansJp(
+                                                  fontWeight: FontWeight.w500,
+                                                  fontStyle:
+                                                      FlutterFlowTheme.of(
+                                                              context)
+                                                          .bodyMedium
+                                                          .fontStyle,
+                                                ),
+                                                color:
+                                                    FlutterFlowTheme.of(context)
+                                                        .primaryText,
+                                                fontSize: 14,
+                                                letterSpacing: 0.0,
+                                                fontWeight: FontWeight.w500,
+                                                fontStyle:
+                                                    FlutterFlowTheme.of(context)
+                                                        .bodyMedium
+                                                        .fontStyle,
+                                              ),
+                                        ),
+                                        Icon(
+                                          Icons.arrow_outward,
+                                          color: FlutterFlowTheme.of(context)
+                                              .primaryText,
+                                          size: 24,
+                                        ),
+                                      ].divide(SizedBox(width: 12)),
+                                    ),
+                                  ),
+                                ],
+                              ),
+                              Row(
+                                mainAxisSize: MainAxisSize.max,
+                                children: [
+                                  Theme(
+                                    data: ThemeData(
+                                      checkboxTheme: CheckboxThemeData(
+                                        visualDensity: VisualDensity.compact,
+                                        materialTapTargetSize:
+                                            MaterialTapTargetSize.shrinkWrap,
+                                        shape: RoundedRectangleBorder(
+                                          borderRadius:
+                                              BorderRadius.circular(4),
+                                        ),
+                                      ),
+                                      unselectedWidgetColor:
+                                          FlutterFlowTheme.of(context)
+                                              .secondary,
+                                    ),
+                                    child: Checkbox(
+                                      value: _model.checkboxValue3 ??= false,
+                                      onChanged: (newValue) async {
+                                        safeSetState(() =>
+                                            _model.checkboxValue3 = newValue!);
+                                        if (newValue!) {
+                                          _model.acceptDataPolicy = true;
+                                          safeSetState(() {});
+                                        }
+                                      },
+                                      side: (FlutterFlowTheme.of(context)
+                                                  .secondary !=
+                                              null)
+                                          ? BorderSide(
+                                              width: 2,
+                                              color:
+                                                  FlutterFlowTheme.of(context)
+                                                      .secondary!,
+                                            )
+                                          : null,
+                                      activeColor:
+                                          FlutterFlowTheme.of(context).primary,
+                                      checkColor:
+                                          FlutterFlowTheme.of(context).info,
+                                    ),
+                                  ),
+                                  InkWell(
+                                    splashColor: Colors.transparent,
+                                    focusColor: Colors.transparent,
+                                    hoverColor: Colors.transparent,
+                                    highlightColor: Colors.transparent,
+                                    onTap: () async {
+                                      _model.selectedTab = 'data';
+                                      safeSetState(() {});
+                                      scaffoldKey.currentState!.openEndDrawer();
+                                    },
+                                    child: Row(
+                                      mainAxisSize: MainAxisSize.max,
+                                      children: [
+                                        Text(
+                                          'I accept the Data Storage Policy',
+                                          style: FlutterFlowTheme.of(context)
+                                              .bodyMedium
+                                              .override(
+                                                font: GoogleFonts.notoSansJp(
+                                                  fontWeight: FontWeight.w500,
+                                                  fontStyle:
+                                                      FlutterFlowTheme.of(
+                                                              context)
+                                                          .bodyMedium
+                                                          .fontStyle,
+                                                ),
+                                                color:
+                                                    FlutterFlowTheme.of(context)
+                                                        .primaryText,
+                                                fontSize: 14,
+                                                letterSpacing: 0.0,
+                                                fontWeight: FontWeight.w500,
+                                                fontStyle:
+                                                    FlutterFlowTheme.of(context)
+                                                        .bodyMedium
+                                                        .fontStyle,
+                                              ),
+                                        ),
+                                        Icon(
+                                          Icons.arrow_outward,
+                                          color: FlutterFlowTheme.of(context)
+                                              .primaryText,
+                                          size: 24,
+                                        ),
+                                      ].divide(SizedBox(width: 12)),
+                                    ),
+                                  ),
+                                ],
+                              ),
+                              Row(
+                                mainAxisSize: MainAxisSize.max,
+                                children: [
+                                  Theme(
+                                    data: ThemeData(
+                                      checkboxTheme: CheckboxThemeData(
+                                        visualDensity: VisualDensity.compact,
+                                        materialTapTargetSize:
+                                            MaterialTapTargetSize.shrinkWrap,
+                                        shape: RoundedRectangleBorder(
+                                          borderRadius:
+                                              BorderRadius.circular(4),
+                                        ),
+                                      ),
+                                      unselectedWidgetColor:
+                                          FlutterFlowTheme.of(context)
+                                              .secondary,
+                                    ),
+                                    child: Checkbox(
+                                      value: _model.checkboxValue4 ??= (_model
+                                                      .checkboxValue1 ==
+                                                  true) &&
+                                              (_model.checkboxValue2 == true) &&
+                                              (_model.checkboxValue3 == true)
+                                          ? true
+                                          : false,
+                                      onChanged: (newValue) async {
+                                        safeSetState(() =>
+                                            _model.checkboxValue4 = newValue!);
+                                        if (newValue!) {
+                                          _model.acceptAll = true;
+                                          _model.acceptPOPIA = true;
+                                          _model.acceptDataPolicy = true;
+                                          _model.acceptTCs = true;
+                                          safeSetState(() {});
+                                        } else {
+                                          _model.acceptAll = false;
+                                          _model.acceptPOPIA = false;
+                                          _model.acceptDataPolicy = false;
+                                          _model.acceptTCs = false;
+                                          safeSetState(() {});
+                                        }
+                                      },
+                                      side: (FlutterFlowTheme.of(context)
+                                                  .secondary !=
+                                              null)
+                                          ? BorderSide(
+                                              width: 2,
+                                              color:
+                                                  FlutterFlowTheme.of(context)
+                                                      .secondary!,
+                                            )
+                                          : null,
+                                      activeColor:
+                                          FlutterFlowTheme.of(context).primary,
+                                      checkColor:
+                                          FlutterFlowTheme.of(context).info,
+                                    ),
+                                  ),
+                                  Row(
+                                    mainAxisSize: MainAxisSize.max,
+                                    mainAxisAlignment:
+                                        MainAxisAlignment.spaceBetween,
+                                    children: [
+                                      Text(
+                                        'Accept All',
+                                        style: FlutterFlowTheme.of(context)
+                                            .bodyMedium
+                                            .override(
+                                              font: GoogleFonts.notoSansJp(
+                                                fontWeight: FontWeight.w500,
+                                                fontStyle:
+                                                    FlutterFlowTheme.of(context)
+                                                        .bodyMedium
+                                                        .fontStyle,
+                                              ),
+                                              color:
+                                                  FlutterFlowTheme.of(context)
+                                                      .primaryText,
+                                              fontSize: 14,
+                                              letterSpacing: 0.0,
+                                              fontWeight: FontWeight.w500,
+                                              fontStyle:
+                                                  FlutterFlowTheme.of(context)
+                                                      .bodyMedium
+                                                      .fontStyle,
+                                            ),
+                                      ),
+                                    ].divide(SizedBox(width: 12)),
+                                  ),
+                                ],
+                              ),
+                            ].divide(SizedBox(height: 6)),
+                          ),
+                        ),
+                      ),
+                      Column(
+                        mainAxisSize: MainAxisSize.min,
+                        mainAxisAlignment: MainAxisAlignment.start,
+                        children: [
+                          Stack(
+                            alignment: AlignmentDirectional(0, 0),
+                            children: [
+                              if ((_model.acceptPOPIA == true) &&
+                                  (_model.acceptTCs == true) &&
+                                  (_model.acceptAll == true) &&
+                                  (_model.acceptDataPolicy == true))
+                                FFButtonWidget(
+                                  onPressed: () async {
+                                    context.pushNamed(
+                                        FyndCreateUserProfileWidget.routeName);
+                                  },
+                                  text: 'ACCEPT',
+                                  options: FFButtonOptions(
+                                    height: 48,
+                                    padding: EdgeInsets.all(14),
+                                    iconPadding: EdgeInsetsDirectional.fromSTEB(
+                                        0, 0, 0, 0),
+                                    color: FlutterFlowTheme.of(context)
+                                        .menuButtonsSet1a,
+                                    textStyle: FlutterFlowTheme.of(context)
+                                        .titleSmall
+                                        .override(
+                                          font: GoogleFonts.notoSansJp(
+                                            fontWeight: FontWeight.w600,
+                                            fontStyle:
+                                                FlutterFlowTheme.of(context)
+                                                    .titleSmall
+                                                    .fontStyle,
+                                          ),
+                                          color: FlutterFlowTheme.of(context)
+                                              .menuButtonsSet1b,
+                                          fontSize: 14,
+                                          letterSpacing: 0.0,
+                                          fontWeight: FontWeight.w600,
+                                          fontStyle:
+                                              FlutterFlowTheme.of(context)
+                                                  .titleSmall
+                                                  .fontStyle,
+                                        ),
+                                    elevation: 6,
+                                    borderSide: BorderSide(
+                                      color: FlutterFlowTheme.of(context)
+                                          .menuButtonsSet1a,
+                                      width: 2,
+                                    ),
+                                    borderRadius: BorderRadius.circular(12),
+                                    hoverColor: FlutterFlowTheme.of(context)
+                                        .menuButtonsSet1a,
+                                    hoverBorderSide: BorderSide(
+                                      color: FlutterFlowTheme.of(context)
+                                          .menuButtonsSet1b,
+                                      width: 2,
+                                    ),
+                                    hoverTextColor: FlutterFlowTheme.of(context)
+                                        .menuButtonsSet1b,
+                                  ),
+                                ),
+                              if ((_model.acceptPOPIA == false) &&
+                                  (_model.acceptTCs == false) &&
+                                  (_model.acceptAll == false) &&
+                                  (_model.acceptDataPolicy == false))
+                                Container(
+                                  decoration: BoxDecoration(
+                                    color: FlutterFlowTheme.of(context).accent3,
+                                    borderRadius: BorderRadius.circular(12),
+                                    border: Border.all(
+                                      color: FlutterFlowTheme.of(context)
+                                          .disabledButton1,
+                                      width: 2,
+                                    ),
+                                  ),
+                                  child: Padding(
+                                    padding: EdgeInsets.all(14),
+                                    child: Text(
+                                      'ACCEPT',
+                                      style: FlutterFlowTheme.of(context)
+                                          .titleSmall
+                                          .override(
+                                            font: GoogleFonts.notoSansJp(
+                                              fontWeight:
+                                                  FlutterFlowTheme.of(context)
+                                                      .titleSmall
+                                                      .fontWeight,
+                                              fontStyle:
+                                                  FlutterFlowTheme.of(context)
+                                                      .titleSmall
+                                                      .fontStyle,
+                                            ),
+                                            color: FlutterFlowTheme.of(context)
+                                                .disabledButton1,
+                                            letterSpacing: 0.0,
+                                            fontWeight:
+                                                FlutterFlowTheme.of(context)
+                                                    .titleSmall
+                                                    .fontWeight,
+                                            fontStyle:
+                                                FlutterFlowTheme.of(context)
+                                                    .titleSmall
+                                                    .fontStyle,
+                                          ),
+                                    ),
+                                  ),
+                                ),
+                            ],
+                          ),
+                        ],
+                      ),
+                    ],
+                  ),
+                ),
+              ),
+            ),
+          ),
+        ));
+  }
+}
