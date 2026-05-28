@@ -1,0 +1,195 @@
+import 'dart:convert';
+import 'dart:math' as math;
+
+import 'package:flutter/material.dart';
+import 'package:google_fonts/google_fonts.dart';
+import 'package:intl/intl.dart';
+import 'package:timeago/timeago.dart' as timeago;
+import 'lat_lng.dart';
+import 'place.dart';
+import 'uploaded_file.dart';
+import '/backend/backend.dart';
+import 'package:cloud_firestore/cloud_firestore.dart';
+import '/backend/schema/structs/index.dart';
+import '/backend/schema/enums/enums.dart';
+import '/auth/firebase_auth/auth_util.dart';
+
+String? strlat(
+  LatLng geoLoc,
+  bool isLatt,
+) {
+  if (isLatt) {
+    return geoLoc.latitude.toString();
+  } else {
+    return geoLoc.longitude.toString();
+  }
+}
+
+double? fnLattLong(
+  LatLng geoLoc,
+  bool isLatt,
+) {
+  if (isLatt) {
+    // Check for null-safety or invalid numbers
+    final lat = geoLoc.latitude;
+    return lat.isNaN ? 0.0 : lat;
+  } else {
+    final lon = geoLoc.longitude;
+    return lon.isNaN ? 0.0 : lon;
+  }
+}
+
+double? fnCalculateDistance(
+  double x1,
+  double x2,
+  double y1,
+  double y2,
+) {
+  return math.sqrt(math.pow((x2 - x1), 2) + math.pow((y2 - y1), 2));
+}
+
+double fnCalculateDistanceLoc(
+  LatLng loc1,
+  LatLng loc2,
+) {
+  double x1, x2, y1, y2;
+
+  y1 = double.parse(loc1.longitude.toString());
+  y2 = double.parse(loc2.longitude.toString());
+  x1 = double.parse(loc1.latitude.toString());
+  x2 = double.parse(loc2.latitude.toString());
+
+  return math.sqrt(math.pow((x2 - x1), 2) + math.pow((y2 - y1), 2));
+}
+
+double fnGetLatt(LatLng location) {
+  return double.parse(location.latitude.toString());
+}
+
+double fnGetLong(LatLng location) {
+  return double.parse(location.longitude.toString());
+}
+
+int calcDistanceHav(
+  LatLng a,
+  LatLng b,
+) {
+  final lat1 = a.latitude;
+  final lon1 = a.longitude;
+  final lat2 = b.latitude;
+  final lon2 = b.longitude;
+
+  const R = 6371; // km
+  final dLat = (lat2 - lat1) * math.pi / 180;
+  final dLon = (lon2 - lon1) * math.pi / 180;
+  final aCalc = math.sin(dLat / 2) * math.sin(dLat / 2) +
+      math.cos(lat1 * math.pi / 180) *
+          math.cos(lat2 * math.pi / 180) *
+          math.sin(dLon / 2) *
+          math.sin(dLon / 2);
+  final c = 2 * math.atan2(math.sqrt(aCalc), math.sqrt(1 - aCalc));
+  return (R * c).toInt();
+}
+
+String? toLowerCaseName(String fromTextField) {
+  // convert string (fromTextField) to lower case
+  return fromTextField.toLowerCase();
+}
+
+String emailBodyTemplate(
+  String? userAName,
+  String? userBName,
+  String? userAEmail,
+  String? userBEmail,
+  String? message,
+  String? screenshots,
+  String? comments,
+  String? reportType,
+) {
+  // Create an email layout that takes all the argument fields and lays them on their own lines. It should say UserA has reported UserB for (reportType), then list UserA's information, then list UserB's information
+  return '''
+  $userAName has reported a $reportType.
+
+  UserA Information:
+  Name: $userAName
+  Email: $userAEmail
+  Message: $message
+  Screenshots: $screenshots
+  Comments: $comments
+
+  UserB Information:
+  Name: $userBName
+  Email: $userBEmail
+  ''';
+}
+
+String? randomKeyGenerator() {
+  // generate a random key using numbers and letters
+  const characters =
+      'abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789';
+  final random = math.Random();
+  return List.generate(
+      10, (index) => characters[random.nextInt(characters.length)]).join();
+}
+
+int calculateAge(DateTime dateOfBirth) {
+  final now = DateTime.now();
+  int age = now.year - dateOfBirth.year;
+  if (now.month < dateOfBirth.month ||
+      (now.month == dateOfBirth.month && now.day < dateOfBirth.day)) {
+    age--;
+  }
+  if (age < 1) {
+    return 0;
+  }
+  return age.toInt();
+}
+
+bool activeLessThan10MinsAgo(DateTime lastActive) {
+  // compare the 'lastActive' time to current time. if the last active happened ten or less minutes ago from the current time, mark the boolean as true. if not, mark it as false
+  final currentTime = DateTime.now();
+  final difference = currentTime.difference(lastActive);
+  return difference.inMinutes <= 10;
+}
+
+String emailBodyTemplateProviderAdded(
+  String username,
+  String? email,
+  String? loginCode,
+) {
+  // Create an email layout that takes all the argument fields and lays them on their own lines. It should say UserA has reported UserB for (reportType), then list UserA's information, then list UserB's information
+  return '''
+Hi $username ,
+
+A provider profile has been created on the Fynd App. 
+
+Download the app and find your provider's profile with the following credentials:
+
+Username: $email
+Login code: $loginCode
+
+
+  ''';
+}
+
+String emailBodyTemplateProviderVerficationResponse(
+  String username,
+  String? email,
+  bool? verifiedBool,
+  String? note,
+) {
+  // Create an email layout that takes all the argument fields and lays them on their own lines. It should say UserA has reported UserB for (reportType), then list UserA's information, then list UserB's information
+  return '''
+Hi $username ,
+
+Your provider profile has been reviewed on the Fynd App. 
+
+See below for the outcome of the review:
+
+Approval Status: $verifiedBool
+Note: $note
+
+
+
+  ''';
+}
