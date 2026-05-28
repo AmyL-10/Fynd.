@@ -1,0 +1,138 @@
+import '/auth/base_auth_user_provider.dart';
+import '/components/web_navbar_widget.dart';
+import '/flutter_flow/flutter_flow_theme.dart';
+import '/flutter_flow/flutter_flow_util.dart';
+import '/flutter_flow/flutter_flow_widgets.dart';
+import '/fynd/components/nav_app_bars/app_bar/app_bar_widget.dart';
+import '/fynd/components/nav_app_bars/provider_nav_bar/provider_nav_bar_widget.dart';
+import '/fynd/legal_policies/terms_and_conditions/terms_and_conditions_widget.dart';
+import 'dart:ui';
+import '/index.dart';
+import 'package:flutter/material.dart';
+import 'package:flutter_spinkit/flutter_spinkit.dart';
+import 'package:google_fonts/google_fonts.dart';
+import 'package:provider/provider.dart';
+
+import 'terms_and_conditions_page_model.dart';
+export 'terms_and_conditions_page_model.dart';
+
+class TermsAndConditionsPageWidget extends StatefulWidget {
+  const TermsAndConditionsPageWidget({super.key});
+
+  static String routeName = 'terms_and_conditions_page';
+  static String routePath = 'termsAndConditionsPage';
+
+  @override
+  State<TermsAndConditionsPageWidget> createState() =>
+      _TermsAndConditionsPageWidgetState();
+}
+
+class _TermsAndConditionsPageWidgetState
+    extends State<TermsAndConditionsPageWidget> {
+  late TermsAndConditionsPageModel _model;
+
+  final scaffoldKey = GlobalKey<ScaffoldState>();
+
+  @override
+  void initState() {
+    super.initState();
+    _model = createModel(context, () => TermsAndConditionsPageModel());
+
+    WidgetsBinding.instance.addPostFrameCallback((_) => safeSetState(() {}));
+  }
+
+  @override
+  void dispose() {
+    _model.dispose();
+
+    super.dispose();
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return Title(
+        title: 'terms_and_conditions_page',
+        color: FlutterFlowTheme.of(context).primary.withAlpha(0XFF),
+        child: GestureDetector(
+          onTap: () {
+            FocusScope.of(context).unfocus();
+            FocusManager.instance.primaryFocus?.unfocus();
+          },
+          child: Scaffold(
+            key: scaffoldKey,
+            backgroundColor: FlutterFlowTheme.of(context).primaryBackground,
+            body: SafeArea(
+              top: true,
+              child: Column(
+                mainAxisSize: MainAxisSize.max,
+                children: [
+                  if (loggedIn == false)
+                    wrapWithModel(
+                      model: _model.webNavbarModel,
+                      updateCallback: () => safeSetState(() {}),
+                      child: WebNavbarWidget(),
+                    ),
+                  if (loggedIn == true)
+                    wrapWithModel(
+                      model: _model.appBarModel,
+                      updateCallback: () => safeSetState(() {}),
+                      child: AppBarWidget(
+                        backAction: () async {
+                          if (Navigator.of(context).canPop()) {
+                            context.pop();
+                          }
+                          context.pushNamed(
+                              ProviderProfileHelpSupportWidget.routeName);
+                        },
+                      ),
+                    ),
+                  Flexible(
+                    child: Material(
+                      color: Colors.transparent,
+                      elevation: 2,
+                      child: Container(
+                        width: double.infinity,
+                        decoration: BoxDecoration(
+                          color: FlutterFlowTheme.of(context).primaryBackground,
+                        ),
+                        child: Padding(
+                          padding: EdgeInsets.all(12),
+                          child: SingleChildScrollView(
+                            controller: _model.columnController,
+                            child: Column(
+                              mainAxisSize: MainAxisSize.min,
+                              children: [
+                                Padding(
+                                  padding: EdgeInsetsDirectional.fromSTEB(
+                                      0, 12, 0, 0),
+                                  child: wrapWithModel(
+                                    model: _model.termsAndConditionsModel,
+                                    updateCallback: () => safeSetState(() {}),
+                                    child: TermsAndConditionsWidget(),
+                                  ),
+                                ),
+                              ],
+                            ),
+                          ),
+                        ),
+                      ),
+                    ),
+                  ),
+                  if (loggedIn == true)
+                    Container(
+                      decoration: BoxDecoration(
+                        color: FlutterFlowTheme.of(context).secondaryBackground,
+                      ),
+                      child: wrapWithModel(
+                        model: _model.providerNavBarModel,
+                        updateCallback: () => safeSetState(() {}),
+                        child: ProviderNavBarWidget(),
+                      ),
+                    ),
+                ],
+              ),
+            ),
+          ),
+        ));
+  }
+}
