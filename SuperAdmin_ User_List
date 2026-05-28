@@ -1,0 +1,111 @@
+import '/backend/backend.dart';
+import '/flutter_flow/flutter_flow_theme.dart';
+import '/flutter_flow/flutter_flow_util.dart';
+import '/flutter_flow/flutter_flow_widgets.dart';
+import '/fynd/components/nav_app_bars/app_bar/app_bar_widget.dart';
+import '/fynd/components/nav_app_bars/provider_nav_bar/provider_nav_bar_widget.dart';
+import '/not_in_mvp1/buddy/buddy_super_admin_edit_user_profile/buddy_super_admin_edit_user_profile_widget.dart';
+import 'dart:ui';
+import '/index.dart';
+import 'package:flutter/material.dart';
+import 'package:flutter_spinkit/flutter_spinkit.dart';
+import 'package:google_fonts/google_fonts.dart';
+import 'package:provider/provider.dart';
+
+import 'buddy_super_admin_user_lists_model.dart';
+export 'buddy_super_admin_user_lists_model.dart';
+
+class BuddySuperAdminUserListsWidget extends StatefulWidget {
+  const BuddySuperAdminUserListsWidget({
+    super.key,
+    required this.userDoc,
+  });
+
+  final UsersRecord? userDoc;
+
+  static String routeName = 'buddy_super_admin_user_lists';
+  static String routePath = 'buddySuperAdminUserLists';
+
+  @override
+  State<BuddySuperAdminUserListsWidget> createState() =>
+      _BuddySuperAdminUserListsWidgetState();
+}
+
+class _BuddySuperAdminUserListsWidgetState
+    extends State<BuddySuperAdminUserListsWidget> {
+  late BuddySuperAdminUserListsModel _model;
+
+  final scaffoldKey = GlobalKey<ScaffoldState>();
+
+  @override
+  void initState() {
+    super.initState();
+    _model = createModel(context, () => BuddySuperAdminUserListsModel());
+
+    WidgetsBinding.instance.addPostFrameCallback((_) => safeSetState(() {}));
+  }
+
+  @override
+  void dispose() {
+    _model.dispose();
+
+    super.dispose();
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return Title(
+        title: 'buddy_super_admin_user_lists',
+        color: FlutterFlowTheme.of(context).primary.withAlpha(0XFF),
+        child: GestureDetector(
+          onTap: () {
+            FocusScope.of(context).unfocus();
+            FocusManager.instance.primaryFocus?.unfocus();
+          },
+          child: Scaffold(
+            key: scaffoldKey,
+            backgroundColor: FlutterFlowTheme.of(context).secondaryBackground,
+            body: SafeArea(
+              top: true,
+              child: Column(
+                mainAxisSize: MainAxisSize.max,
+                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                children: [
+                  Column(
+                    mainAxisSize: MainAxisSize.max,
+                    children: [
+                      wrapWithModel(
+                        model: _model.appBarModel,
+                        updateCallback: () => safeSetState(() {}),
+                        child: AppBarWidget(
+                          backAction: () async {
+                            context.goNamed(
+                                BuddySuperAdminManageUserProfileWidget
+                                    .routeName);
+                          },
+                        ),
+                      ),
+                      Padding(
+                        padding: EdgeInsets.all(12),
+                        child: wrapWithModel(
+                          model: _model.buddySuperAdminEditUserProfileModel,
+                          updateCallback: () => safeSetState(() {}),
+                          child: BuddySuperAdminEditUserProfileWidget(
+                            userRef: widget!.userDoc!,
+                          ),
+                        ),
+                      ),
+                    ],
+                  ),
+                  wrapWithModel(
+                    model: _model.providerNavBarModel,
+                    updateCallback: () => safeSetState(() {}),
+                    child: ProviderNavBarWidget(),
+                  ),
+                ],
+              ),
+            ),
+          ),
+        ));
+  }
+}
