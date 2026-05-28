@@ -1,0 +1,2694 @@
+import '/auth/firebase_auth/auth_util.dart';
+import '/backend/backend.dart';
+import '/backend/firebase_storage/storage.dart';
+import '/backend/push_notifications/push_notifications_util.dart';
+import '/backend/schema/enums/enums.dart';
+import '/backend/schema/structs/index.dart';
+import '/components/gallery_images_widget.dart';
+import '/flutter_flow/flutter_flow_choice_chips.dart';
+import '/flutter_flow/flutter_flow_expanded_image_view.dart';
+import '/flutter_flow/flutter_flow_icon_button.dart';
+import '/flutter_flow/flutter_flow_theme.dart';
+import '/flutter_flow/flutter_flow_util.dart';
+import '/flutter_flow/flutter_flow_widgets.dart';
+import '/flutter_flow/form_field_controller.dart';
+import '/flutter_flow/upload_data.dart';
+import 'dart:async';
+import 'dart:ui';
+import '/flutter_flow/custom_functions.dart' as functions;
+import '/index.dart';
+import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:easy_debounce/easy_debounce.dart';
+import 'package:flutter/material.dart';
+import 'package:flutter/scheduler.dart';
+import 'package:flutter_spinkit/flutter_spinkit.dart';
+import 'package:font_awesome_flutter/font_awesome_flutter.dart';
+import 'package:google_fonts/google_fonts.dart';
+import 'package:page_transition/page_transition.dart';
+import 'package:provider/provider.dart';
+
+import 'provider_create_provider_profile_model.dart';
+export 'provider_create_provider_profile_model.dart';
+
+class ProviderCreateProviderProfileWidget extends StatefulWidget {
+  const ProviderCreateProviderProfileWidget({super.key});
+
+  static String routeName = 'provider_create_provider_profile';
+  static String routePath = 'providerCreateProviderProfile';
+
+  @override
+  State<ProviderCreateProviderProfileWidget> createState() =>
+      _ProviderCreateProviderProfileWidgetState();
+}
+
+class _ProviderCreateProviderProfileWidgetState
+    extends State<ProviderCreateProviderProfileWidget> {
+  late ProviderCreateProviderProfileModel _model;
+
+  final scaffoldKey = GlobalKey<ScaffoldState>();
+
+  @override
+  void initState() {
+    super.initState();
+    _model = createModel(context, () => ProviderCreateProviderProfileModel());
+
+    // On page load action.
+    SchedulerBinding.instance.addPostFrameCallback((_) async {
+      _model.updateProviderDataStruct(
+        (e) => e..adminRef = currentUserReference,
+      );
+      safeSetState(() {});
+    });
+
+    _model.providerNameTextController ??= TextEditingController();
+    _model.providerNameFocusNode ??= FocusNode();
+
+    _model.aboutProviderTextController ??= TextEditingController();
+    _model.aboutProviderFocusNode ??= FocusNode();
+
+    WidgetsBinding.instance.addPostFrameCallback((_) => safeSetState(() {}));
+  }
+
+  @override
+  void dispose() {
+    _model.dispose();
+
+    super.dispose();
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    context.watch<FFAppState>();
+
+    return Title(
+        title: 'provider_create_provider_profile',
+        color: FlutterFlowTheme.of(context).primary.withAlpha(0XFF),
+        child: GestureDetector(
+          onTap: () {
+            FocusScope.of(context).unfocus();
+            FocusManager.instance.primaryFocus?.unfocus();
+          },
+          child: Scaffold(
+            key: scaffoldKey,
+            backgroundColor: FlutterFlowTheme.of(context).primaryBackground,
+            body: SafeArea(
+              top: true,
+              child: Container(
+                width: double.infinity,
+                height: MediaQuery.sizeOf(context).height,
+                constraints: BoxConstraints(
+                  maxWidth: MediaQuery.sizeOf(context).width,
+                  maxHeight: MediaQuery.sizeOf(context).height,
+                ),
+                decoration: BoxDecoration(
+                  color: FlutterFlowTheme.of(context).primaryBackground,
+                ),
+                child: Padding(
+                  padding: EdgeInsets.all(12),
+                  child: SingleChildScrollView(
+                    controller: _model.columnController,
+                    child: Column(
+                      mainAxisSize: MainAxisSize.max,
+                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                      crossAxisAlignment: CrossAxisAlignment.stretch,
+                      children: [
+                        Container(
+                          decoration: BoxDecoration(
+                            color:
+                                FlutterFlowTheme.of(context).menuButtonsSet2b,
+                            borderRadius: BorderRadius.circular(12),
+                          ),
+                          child: Padding(
+                            padding: EdgeInsets.all(12),
+                            child: Row(
+                              mainAxisSize: MainAxisSize.max,
+                              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                              children: [
+                                Align(
+                                  alignment: AlignmentDirectional(-1, 0),
+                                  child: Text(
+                                    'Provider Details',
+                                    style: FlutterFlowTheme.of(context)
+                                        .titleLarge
+                                        .override(
+                                          font: GoogleFonts.bricolageGrotesque(
+                                            fontWeight:
+                                                FlutterFlowTheme.of(context)
+                                                    .titleLarge
+                                                    .fontWeight,
+                                            fontStyle:
+                                                FlutterFlowTheme.of(context)
+                                                    .titleLarge
+                                                    .fontStyle,
+                                          ),
+                                          color: FlutterFlowTheme.of(context)
+                                              .menuButtonsSet2a,
+                                          letterSpacing: 0.0,
+                                          fontWeight:
+                                              FlutterFlowTheme.of(context)
+                                                  .titleLarge
+                                                  .fontWeight,
+                                          fontStyle:
+                                              FlutterFlowTheme.of(context)
+                                                  .titleLarge
+                                                  .fontStyle,
+                                        ),
+                                  ),
+                                ),
+                                Row(
+                                  mainAxisSize: MainAxisSize.max,
+                                  children: [
+                                    if (_model.saveProviderDetailsFormCreate ==
+                                        true)
+                                      Material(
+                                        color: Colors.transparent,
+                                        elevation: 6,
+                                        shape: const CircleBorder(),
+                                        child: Container(
+                                          width: 46,
+                                          height: 46,
+                                          decoration: BoxDecoration(
+                                            color: FlutterFlowTheme.of(context)
+                                                .menuButtonsSet2a,
+                                            shape: BoxShape.circle,
+                                          ),
+                                          child: Icon(
+                                            FFIcons.kcheck4,
+                                            color: FlutterFlowTheme.of(context)
+                                                .menuButtonsSet1b,
+                                            size: 32,
+                                          ),
+                                        ),
+                                      ),
+                                  ],
+                                ),
+                              ],
+                            ),
+                          ),
+                        ),
+                        Container(
+                          width: double.infinity,
+                          child: Form(
+                            key: _model.formKey,
+                            autovalidateMode: AutovalidateMode.always,
+                            child: Column(
+                              mainAxisSize: MainAxisSize.max,
+                              crossAxisAlignment: CrossAxisAlignment.center,
+                              children: [
+                                Column(
+                                  mainAxisSize: MainAxisSize.max,
+                                  children: [
+                                    Padding(
+                                      padding: EdgeInsetsDirectional.fromSTEB(
+                                          0, 6, 0, 6),
+                                      child: TextFormField(
+                                        controller:
+                                            _model.providerNameTextController,
+                                        focusNode: _model.providerNameFocusNode,
+                                        onChanged: (_) => EasyDebounce.debounce(
+                                          '_model.providerNameTextController',
+                                          Duration(milliseconds: 2000),
+                                          () async {
+                                            _model.updateProviderDataStruct(
+                                              (e) => e
+                                                ..providerName = _model
+                                                    .providerNameTextController
+                                                    .text,
+                                            );
+                                            safeSetState(() {});
+                                          },
+                                        ),
+                                        autofocus: false,
+                                        obscureText: false,
+                                        decoration: InputDecoration(
+                                          isDense: false,
+                                          labelText: 'Provider\'s Display Name',
+                                          alignLabelWithHint: false,
+                                          hintText: 'Provider\'s Display Name',
+                                          enabledBorder: OutlineInputBorder(
+                                            borderSide: BorderSide(
+                                              color:
+                                                  FlutterFlowTheme.of(context)
+                                                      .menuButtonsSet2b,
+                                              width: 2,
+                                            ),
+                                            borderRadius:
+                                                BorderRadius.circular(12),
+                                          ),
+                                          focusedBorder: OutlineInputBorder(
+                                            borderSide: BorderSide(
+                                              color:
+                                                  FlutterFlowTheme.of(context)
+                                                      .primary,
+                                              width: 2,
+                                            ),
+                                            borderRadius:
+                                                BorderRadius.circular(12),
+                                          ),
+                                          errorBorder: OutlineInputBorder(
+                                            borderSide: BorderSide(
+                                              color:
+                                                  FlutterFlowTheme.of(context)
+                                                      .error,
+                                              width: 2,
+                                            ),
+                                            borderRadius:
+                                                BorderRadius.circular(12),
+                                          ),
+                                          focusedErrorBorder:
+                                              OutlineInputBorder(
+                                            borderSide: BorderSide(
+                                              color:
+                                                  FlutterFlowTheme.of(context)
+                                                      .error,
+                                              width: 2,
+                                            ),
+                                            borderRadius:
+                                                BorderRadius.circular(12),
+                                          ),
+                                          contentPadding:
+                                              EdgeInsetsDirectional.fromSTEB(
+                                                  6, 12, 6, 12),
+                                          prefixIcon: Icon(
+                                            FFIcons.kuser,
+                                            color: FlutterFlowTheme.of(context)
+                                                .accent4,
+                                            size: 16,
+                                          ),
+                                          suffixIcon: _model
+                                                  .providerNameTextController!
+                                                  .text
+                                                  .isNotEmpty
+                                              ? InkWell(
+                                                  onTap: () async {
+                                                    _model
+                                                        .providerNameTextController
+                                                        ?.clear();
+                                                    _model
+                                                        .updateProviderDataStruct(
+                                                      (e) => e
+                                                        ..providerName = _model
+                                                            .providerNameTextController
+                                                            .text,
+                                                    );
+                                                    safeSetState(() {});
+                                                    safeSetState(() {});
+                                                  },
+                                                  child: Icon(
+                                                    Icons.clear,
+                                                    color: FlutterFlowTheme.of(
+                                                            context)
+                                                        .accent4,
+                                                    size: 22,
+                                                  ),
+                                                )
+                                              : null,
+                                        ),
+                                        style: FlutterFlowTheme.of(context)
+                                            .labelMedium
+                                            .override(
+                                              font: GoogleFonts.notoSansJp(
+                                                fontWeight: FontWeight.w500,
+                                                fontStyle:
+                                                    FlutterFlowTheme.of(context)
+                                                        .labelMedium
+                                                        .fontStyle,
+                                              ),
+                                              fontSize: 12,
+                                              letterSpacing: 0.0,
+                                              fontWeight: FontWeight.w500,
+                                              fontStyle:
+                                                  FlutterFlowTheme.of(context)
+                                                      .labelMedium
+                                                      .fontStyle,
+                                            ),
+                                        cursorColor:
+                                            FlutterFlowTheme.of(context)
+                                                .primaryText,
+                                        enableInteractiveSelection: true,
+                                        validator: _model
+                                            .providerNameTextControllerValidator
+                                            .asValidator(context),
+                                      ),
+                                    ),
+                                    Padding(
+                                      padding: EdgeInsetsDirectional.fromSTEB(
+                                          0, 6, 0, 6),
+                                      child: TextFormField(
+                                        controller:
+                                            _model.aboutProviderTextController,
+                                        focusNode:
+                                            _model.aboutProviderFocusNode,
+                                        onChanged: (_) => EasyDebounce.debounce(
+                                          '_model.aboutProviderTextController',
+                                          Duration(milliseconds: 2000),
+                                          () async {
+                                            _model.updateProviderDataStruct(
+                                              (e) => e
+                                                ..providerAbout = _model
+                                                    .aboutProviderTextController
+                                                    .text,
+                                            );
+                                            safeSetState(() {});
+                                          },
+                                        ),
+                                        autofocus: false,
+                                        obscureText: false,
+                                        decoration: InputDecoration(
+                                          isDense: false,
+                                          labelText: 'About Provider',
+                                          alignLabelWithHint: false,
+                                          hintText: 'About Provider',
+                                          enabledBorder: OutlineInputBorder(
+                                            borderSide: BorderSide(
+                                              color:
+                                                  FlutterFlowTheme.of(context)
+                                                      .menuButtonsSet2b,
+                                              width: 2,
+                                            ),
+                                            borderRadius:
+                                                BorderRadius.circular(12),
+                                          ),
+                                          focusedBorder: OutlineInputBorder(
+                                            borderSide: BorderSide(
+                                              color:
+                                                  FlutterFlowTheme.of(context)
+                                                      .primary,
+                                              width: 2,
+                                            ),
+                                            borderRadius:
+                                                BorderRadius.circular(12),
+                                          ),
+                                          errorBorder: OutlineInputBorder(
+                                            borderSide: BorderSide(
+                                              color:
+                                                  FlutterFlowTheme.of(context)
+                                                      .error,
+                                              width: 2,
+                                            ),
+                                            borderRadius:
+                                                BorderRadius.circular(12),
+                                          ),
+                                          focusedErrorBorder:
+                                              OutlineInputBorder(
+                                            borderSide: BorderSide(
+                                              color:
+                                                  FlutterFlowTheme.of(context)
+                                                      .error,
+                                              width: 2,
+                                            ),
+                                            borderRadius:
+                                                BorderRadius.circular(12),
+                                          ),
+                                          contentPadding:
+                                              EdgeInsetsDirectional.fromSTEB(
+                                                  6, 12, 6, 12),
+                                          prefixIcon: Icon(
+                                            FFIcons.kuser,
+                                            color: FlutterFlowTheme.of(context)
+                                                .accent4,
+                                            size: 16,
+                                          ),
+                                          suffixIcon: _model
+                                                  .aboutProviderTextController!
+                                                  .text
+                                                  .isNotEmpty
+                                              ? InkWell(
+                                                  onTap: () async {
+                                                    _model
+                                                        .aboutProviderTextController
+                                                        ?.clear();
+                                                    _model
+                                                        .updateProviderDataStruct(
+                                                      (e) => e
+                                                        ..providerAbout = _model
+                                                            .aboutProviderTextController
+                                                            .text,
+                                                    );
+                                                    safeSetState(() {});
+                                                    safeSetState(() {});
+                                                  },
+                                                  child: Icon(
+                                                    Icons.clear,
+                                                    color: FlutterFlowTheme.of(
+                                                            context)
+                                                        .accent4,
+                                                    size: 22,
+                                                  ),
+                                                )
+                                              : null,
+                                        ),
+                                        style: FlutterFlowTheme.of(context)
+                                            .labelMedium
+                                            .override(
+                                              font: GoogleFonts.notoSansJp(
+                                                fontWeight:
+                                                    FlutterFlowTheme.of(context)
+                                                        .labelMedium
+                                                        .fontWeight,
+                                                fontStyle:
+                                                    FlutterFlowTheme.of(context)
+                                                        .labelMedium
+                                                        .fontStyle,
+                                              ),
+                                              fontSize: 12,
+                                              letterSpacing: 0.0,
+                                              fontWeight:
+                                                  FlutterFlowTheme.of(context)
+                                                      .labelMedium
+                                                      .fontWeight,
+                                              fontStyle:
+                                                  FlutterFlowTheme.of(context)
+                                                      .labelMedium
+                                                      .fontStyle,
+                                            ),
+                                        maxLines: null,
+                                        cursorColor:
+                                            FlutterFlowTheme.of(context)
+                                                .primaryText,
+                                        enableInteractiveSelection: true,
+                                        validator: _model
+                                            .aboutProviderTextControllerValidator
+                                            .asValidator(context),
+                                      ),
+                                    ),
+                                    Align(
+                                      alignment: AlignmentDirectional(1, 0),
+                                      child: Stack(
+                                        alignment: AlignmentDirectional(1, 0),
+                                        children: [
+                                          if (_model.basicSaved == false)
+                                            Align(
+                                              alignment:
+                                                  AlignmentDirectional(1, 0),
+                                              child: FFButtonWidget(
+                                                onPressed: () async {
+                                                  _model.basicSaved = true;
+                                                  _model
+                                                      .updateProviderDataStruct(
+                                                    (e) => e
+                                                      ..providerAbout = _model
+                                                          .aboutProviderTextController
+                                                          .text
+                                                      ..providerName = _model
+                                                          .providerNameTextController
+                                                          .text,
+                                                  );
+                                                  safeSetState(() {});
+                                                },
+                                                text: 'SAVE',
+                                                options: FFButtonOptions(
+                                                  width: 84,
+                                                  height: 40,
+                                                  padding: EdgeInsets.all(12),
+                                                  iconPadding:
+                                                      EdgeInsetsDirectional
+                                                          .fromSTEB(0, 0, 0, 0),
+                                                  color: Color(0x000000FF),
+                                                  textStyle:
+                                                      FlutterFlowTheme.of(
+                                                              context)
+                                                          .titleSmall
+                                                          .override(
+                                                            font: GoogleFonts
+                                                                .notoSansJp(
+                                                              fontWeight:
+                                                                  FlutterFlowTheme.of(
+                                                                          context)
+                                                                      .titleSmall
+                                                                      .fontWeight,
+                                                              fontStyle:
+                                                                  FlutterFlowTheme.of(
+                                                                          context)
+                                                                      .titleSmall
+                                                                      .fontStyle,
+                                                            ),
+                                                            color: FlutterFlowTheme
+                                                                    .of(context)
+                                                                .menuButtonsSet2b,
+                                                            fontSize: 14,
+                                                            letterSpacing: 0.0,
+                                                            fontWeight:
+                                                                FlutterFlowTheme.of(
+                                                                        context)
+                                                                    .titleSmall
+                                                                    .fontWeight,
+                                                            fontStyle:
+                                                                FlutterFlowTheme.of(
+                                                                        context)
+                                                                    .titleSmall
+                                                                    .fontStyle,
+                                                          ),
+                                                  borderSide: BorderSide(
+                                                    color: FlutterFlowTheme.of(
+                                                            context)
+                                                        .menuButtonsSet2b,
+                                                    width: 2,
+                                                  ),
+                                                  borderRadius:
+                                                      BorderRadius.circular(12),
+                                                  hoverColor:
+                                                      FlutterFlowTheme.of(
+                                                              context)
+                                                          .menuButtonsSet2b,
+                                                  hoverBorderSide: BorderSide(
+                                                    color: FlutterFlowTheme.of(
+                                                            context)
+                                                        .menuButtonsSet2b,
+                                                    width: 2,
+                                                  ),
+                                                  hoverTextColor:
+                                                      FlutterFlowTheme.of(
+                                                              context)
+                                                          .menuButtonsSet2a,
+                                                ),
+                                              ),
+                                            ),
+                                          if (_model.basicSaved == true)
+                                            Row(
+                                              mainAxisSize: MainAxisSize.max,
+                                              mainAxisAlignment:
+                                                  MainAxisAlignment.end,
+                                              children: [
+                                                Align(
+                                                  alignment:
+                                                      AlignmentDirectional(
+                                                          1, 0),
+                                                  child: Icon(
+                                                    Icons
+                                                        .check_circle_outline_sharp,
+                                                    color: FlutterFlowTheme.of(
+                                                            context)
+                                                        .primary,
+                                                    size: 35,
+                                                  ),
+                                                ),
+                                                FlutterFlowIconButton(
+                                                  borderRadius: 8,
+                                                  buttonSize: 40,
+                                                  icon: FaIcon(
+                                                    FontAwesomeIcons.redoAlt,
+                                                    color: FlutterFlowTheme.of(
+                                                            context)
+                                                        .secondaryText,
+                                                    size: 24,
+                                                  ),
+                                                  onPressed: () async {
+                                                    _model
+                                                        .updateProviderDataStruct(
+                                                      (e) => e
+                                                        ..providerAbout = null
+                                                        ..providerName = null,
+                                                    );
+                                                    _model.basicSaved = false;
+                                                    safeSetState(() {});
+                                                    safeSetState(() {
+                                                      _model
+                                                          .providerNameTextController
+                                                          ?.clear();
+                                                      _model
+                                                          .aboutProviderTextController
+                                                          ?.clear();
+                                                    });
+                                                  },
+                                                ),
+                                              ].divide(SizedBox(width: 6)),
+                                            ),
+                                        ],
+                                      ),
+                                    ),
+                                  ].divide(SizedBox(height: 12)),
+                                ),
+                                Divider(
+                                  thickness: 1,
+                                  color: FlutterFlowTheme.of(context)
+                                      .menuButtonsSet1b,
+                                ),
+                                Column(
+                                  mainAxisSize: MainAxisSize.max,
+                                  crossAxisAlignment: CrossAxisAlignment.start,
+                                  children: [
+                                    Text(
+                                      'Provider Logo',
+                                      style: FlutterFlowTheme.of(context)
+                                          .titleMedium
+                                          .override(
+                                            font:
+                                                GoogleFonts.bricolageGrotesque(
+                                              fontWeight:
+                                                  FlutterFlowTheme.of(context)
+                                                      .titleMedium
+                                                      .fontWeight,
+                                              fontStyle:
+                                                  FlutterFlowTheme.of(context)
+                                                      .titleMedium
+                                                      .fontStyle,
+                                            ),
+                                            letterSpacing: 0.0,
+                                            fontWeight:
+                                                FlutterFlowTheme.of(context)
+                                                    .titleMedium
+                                                    .fontWeight,
+                                            fontStyle:
+                                                FlutterFlowTheme.of(context)
+                                                    .titleMedium
+                                                    .fontStyle,
+                                          ),
+                                    ),
+                                    Text(
+                                      'Use your logo',
+                                      style: FlutterFlowTheme.of(context)
+                                          .bodySmall
+                                          .override(
+                                            font: GoogleFonts.notoSansJp(
+                                              fontWeight:
+                                                  FlutterFlowTheme.of(context)
+                                                      .bodySmall
+                                                      .fontWeight,
+                                              fontStyle: FontStyle.italic,
+                                            ),
+                                            letterSpacing: 0.0,
+                                            fontWeight:
+                                                FlutterFlowTheme.of(context)
+                                                    .bodySmall
+                                                    .fontWeight,
+                                            fontStyle: FontStyle.italic,
+                                          ),
+                                    ),
+                                    Row(
+                                      mainAxisSize: MainAxisSize.max,
+                                      mainAxisAlignment:
+                                          MainAxisAlignment.spaceBetween,
+                                      crossAxisAlignment:
+                                          CrossAxisAlignment.start,
+                                      children: [
+                                        Align(
+                                          alignment: AlignmentDirectional(0, 0),
+                                          child: Container(
+                                            width: 120,
+                                            height: 120,
+                                            decoration: BoxDecoration(
+                                              borderRadius:
+                                                  BorderRadius.circular(12),
+                                              border: Border.all(
+                                                color:
+                                                    FlutterFlowTheme.of(context)
+                                                        .secondary,
+                                                width: 2,
+                                              ),
+                                            ),
+                                            alignment:
+                                                AlignmentDirectional(0, 0),
+                                            child: Stack(
+                                              children: [
+                                                Align(
+                                                  alignment:
+                                                      AlignmentDirectional(
+                                                          0, 0),
+                                                  child: Icon(
+                                                    Icons.person,
+                                                    color: FlutterFlowTheme.of(
+                                                            context)
+                                                        .secondary,
+                                                    size: 108,
+                                                  ),
+                                                ),
+                                                if (_model.providerData
+                                                            ?.profileLogoPic !=
+                                                        null &&
+                                                    _model.providerData
+                                                            ?.profileLogoPic !=
+                                                        '')
+                                                  InkWell(
+                                                    splashColor:
+                                                        Colors.transparent,
+                                                    focusColor:
+                                                        Colors.transparent,
+                                                    hoverColor:
+                                                        Colors.transparent,
+                                                    highlightColor:
+                                                        Colors.transparent,
+                                                    onTap: () async {
+                                                      await Navigator.push(
+                                                        context,
+                                                        PageTransition(
+                                                          type:
+                                                              PageTransitionType
+                                                                  .fade,
+                                                          child:
+                                                              FlutterFlowExpandedImageView(
+                                                            image:
+                                                                Image.network(
+                                                              _model
+                                                                  .providerData!
+                                                                  .profileLogoPic,
+                                                              fit: BoxFit
+                                                                  .contain,
+                                                            ),
+                                                            allowRotation:
+                                                                false,
+                                                            tag: _model
+                                                                .providerData!
+                                                                .profileLogoPic,
+                                                            useHeroAnimation:
+                                                                true,
+                                                          ),
+                                                        ),
+                                                      );
+                                                    },
+                                                    child: Hero(
+                                                      tag: _model.providerData!
+                                                          .profileLogoPic,
+                                                      transitionOnUserGestures:
+                                                          true,
+                                                      child: ClipRRect(
+                                                        borderRadius:
+                                                            BorderRadius
+                                                                .circular(8),
+                                                        child: Image.network(
+                                                          _model.providerData!
+                                                              .profileLogoPic,
+                                                          width: 120,
+                                                          height: 120,
+                                                          fit: BoxFit.cover,
+                                                        ),
+                                                      ),
+                                                    ),
+                                                  ),
+                                              ],
+                                            ),
+                                          ),
+                                        ),
+                                        Column(
+                                          mainAxisSize: MainAxisSize.max,
+                                          children: [
+                                            Align(
+                                              alignment:
+                                                  AlignmentDirectional(1, 0),
+                                              child: Stack(
+                                                alignment:
+                                                    AlignmentDirectional(1, 0),
+                                                children: [
+                                                  if (_model.logoSaved == true)
+                                                    Row(
+                                                      mainAxisSize:
+                                                          MainAxisSize.max,
+                                                      mainAxisAlignment:
+                                                          MainAxisAlignment.end,
+                                                      children: [
+                                                        Align(
+                                                          alignment:
+                                                              AlignmentDirectional(
+                                                                  1, 0),
+                                                          child: Icon(
+                                                            Icons
+                                                                .check_circle_outline_sharp,
+                                                            color: FlutterFlowTheme
+                                                                    .of(context)
+                                                                .primary,
+                                                            size: 35,
+                                                          ),
+                                                        ),
+                                                        FlutterFlowIconButton(
+                                                          borderRadius: 8,
+                                                          buttonSize: 40,
+                                                          icon: FaIcon(
+                                                            FontAwesomeIcons
+                                                                .redoAlt,
+                                                            color: FlutterFlowTheme
+                                                                    .of(context)
+                                                                .secondaryText,
+                                                            size: 24,
+                                                          ),
+                                                          onPressed: () async {
+                                                            _model.logoSaved =
+                                                                false;
+                                                            _model
+                                                                .updateProviderDataStruct(
+                                                              (e) => e
+                                                                ..profileLogoPic =
+                                                                    null,
+                                                            );
+                                                            safeSetState(() {});
+                                                            safeSetState(() {
+                                                              _model.isDataUploading_providerLogoImageCreate =
+                                                                  false;
+                                                              _model.uploadedLocalFile_providerLogoImageCreate =
+                                                                  FFUploadedFile(
+                                                                      bytes: Uint8List
+                                                                          .fromList(
+                                                                              []),
+                                                                      originalFilename:
+                                                                          '');
+                                                              _model.uploadedFileUrl_providerLogoImageCreate =
+                                                                  '';
+                                                            });
+                                                          },
+                                                        ),
+                                                      ].divide(
+                                                          SizedBox(width: 6)),
+                                                    ),
+                                                  if (_model.logoSaved == false)
+                                                    Align(
+                                                      alignment:
+                                                          AlignmentDirectional(
+                                                              0, 0),
+                                                      child: FFButtonWidget(
+                                                        onPressed: () async {
+                                                          final selectedMedia =
+                                                              await selectMediaWithSourceBottomSheet(
+                                                            context: context,
+                                                            maxWidth: 120.00,
+                                                            maxHeight: 120.00,
+                                                            allowPhoto: true,
+                                                            includeDimensions:
+                                                                true,
+                                                            pickerFontFamily:
+                                                                'Noto Sans JP',
+                                                          );
+                                                          if (selectedMedia !=
+                                                                  null &&
+                                                              selectedMedia.every((m) =>
+                                                                  validateFileFormat(
+                                                                      m.storagePath,
+                                                                      context))) {
+                                                            safeSetState(() =>
+                                                                _model.isDataUploading_providerLogoImageCreate =
+                                                                    true);
+                                                            var selectedUploadedFiles =
+                                                                <FFUploadedFile>[];
+
+                                                            var downloadUrls =
+                                                                <String>[];
+                                                            try {
+                                                              showUploadMessage(
+                                                                context,
+                                                                'Uploading file...',
+                                                                showLoading:
+                                                                    true,
+                                                              );
+                                                              selectedUploadedFiles =
+                                                                  selectedMedia
+                                                                      .map((m) =>
+                                                                          FFUploadedFile(
+                                                                            name:
+                                                                                m.storagePath.split('/').last,
+                                                                            bytes:
+                                                                                m.bytes,
+                                                                            height:
+                                                                                m.dimensions?.height,
+                                                                            width:
+                                                                                m.dimensions?.width,
+                                                                            blurHash:
+                                                                                m.blurHash,
+                                                                            originalFilename:
+                                                                                m.originalFilename,
+                                                                          ))
+                                                                      .toList();
+
+                                                              downloadUrls =
+                                                                  (await Future
+                                                                          .wait(
+                                                                selectedMedia
+                                                                    .map(
+                                                                  (m) async =>
+                                                                      await uploadData(
+                                                                          m.storagePath,
+                                                                          m.bytes),
+                                                                ),
+                                                              ))
+                                                                      .where((u) =>
+                                                                          u !=
+                                                                          null)
+                                                                      .map((u) =>
+                                                                          u!)
+                                                                      .toList();
+                                                            } finally {
+                                                              ScaffoldMessenger
+                                                                      .of(context)
+                                                                  .hideCurrentSnackBar();
+                                                              _model.isDataUploading_providerLogoImageCreate =
+                                                                  false;
+                                                            }
+                                                            if (selectedUploadedFiles
+                                                                        .length ==
+                                                                    selectedMedia
+                                                                        .length &&
+                                                                downloadUrls
+                                                                        .length ==
+                                                                    selectedMedia
+                                                                        .length) {
+                                                              safeSetState(() {
+                                                                _model.uploadedLocalFile_providerLogoImageCreate =
+                                                                    selectedUploadedFiles
+                                                                        .first;
+                                                                _model.uploadedFileUrl_providerLogoImageCreate =
+                                                                    downloadUrls
+                                                                        .first;
+                                                              });
+                                                              showUploadMessage(
+                                                                  context,
+                                                                  'Success!');
+                                                            } else {
+                                                              safeSetState(
+                                                                  () {});
+                                                              showUploadMessage(
+                                                                  context,
+                                                                  'Failed to upload data');
+                                                              return;
+                                                            }
+                                                          }
+
+                                                          _model
+                                                              .updateProviderDataStruct(
+                                                            (e) => e
+                                                              ..profileLogoPic =
+                                                                  _model
+                                                                      .uploadedFileUrl_providerLogoImageCreate,
+                                                          );
+                                                          _model.logoSaved =
+                                                              true;
+                                                          safeSetState(() {});
+                                                        },
+                                                        text: 'UPLOAD',
+                                                        options:
+                                                            FFButtonOptions(
+                                                          height: 40,
+                                                          padding:
+                                                              EdgeInsets.all(
+                                                                  12),
+                                                          iconPadding:
+                                                              EdgeInsetsDirectional
+                                                                  .fromSTEB(0,
+                                                                      0, 0, 0),
+                                                          color:
+                                                              Color(0x000000FF),
+                                                          textStyle:
+                                                              FlutterFlowTheme.of(
+                                                                      context)
+                                                                  .titleSmall
+                                                                  .override(
+                                                                    font: GoogleFonts
+                                                                        .notoSansJp(
+                                                                      fontWeight: FlutterFlowTheme.of(
+                                                                              context)
+                                                                          .titleSmall
+                                                                          .fontWeight,
+                                                                      fontStyle: FlutterFlowTheme.of(
+                                                                              context)
+                                                                          .titleSmall
+                                                                          .fontStyle,
+                                                                    ),
+                                                                    color: FlutterFlowTheme.of(
+                                                                            context)
+                                                                        .menuButtonsSet2b,
+                                                                    fontSize:
+                                                                        14,
+                                                                    letterSpacing:
+                                                                        0.0,
+                                                                    fontWeight: FlutterFlowTheme.of(
+                                                                            context)
+                                                                        .titleSmall
+                                                                        .fontWeight,
+                                                                    fontStyle: FlutterFlowTheme.of(
+                                                                            context)
+                                                                        .titleSmall
+                                                                        .fontStyle,
+                                                                  ),
+                                                          borderSide:
+                                                              BorderSide(
+                                                            color: FlutterFlowTheme
+                                                                    .of(context)
+                                                                .menuButtonsSet2b,
+                                                            width: 2,
+                                                          ),
+                                                          borderRadius:
+                                                              BorderRadius
+                                                                  .circular(12),
+                                                          hoverColor:
+                                                              FlutterFlowTheme.of(
+                                                                      context)
+                                                                  .menuButtonsSet2b,
+                                                          hoverBorderSide:
+                                                              BorderSide(
+                                                            color: FlutterFlowTheme
+                                                                    .of(context)
+                                                                .menuButtonsSet2b,
+                                                            width: 2,
+                                                          ),
+                                                          hoverTextColor:
+                                                              FlutterFlowTheme.of(
+                                                                      context)
+                                                                  .menuButtonsSet2a,
+                                                        ),
+                                                      ),
+                                                    ),
+                                                ],
+                                              ),
+                                            ),
+                                          ].divide(SizedBox(height: 6)),
+                                        ),
+                                      ],
+                                    ),
+                                  ].divide(SizedBox(height: 10)),
+                                ),
+                                Divider(
+                                  thickness: 1,
+                                  color: FlutterFlowTheme.of(context)
+                                      .menuButtonsSet1b,
+                                ),
+                                Column(
+                                  mainAxisSize: MainAxisSize.max,
+                                  crossAxisAlignment: CrossAxisAlignment.start,
+                                  children: [
+                                    Text(
+                                      'Gallery',
+                                      style: FlutterFlowTheme.of(context)
+                                          .titleMedium
+                                          .override(
+                                            font:
+                                                GoogleFonts.bricolageGrotesque(
+                                              fontWeight:
+                                                  FlutterFlowTheme.of(context)
+                                                      .titleMedium
+                                                      .fontWeight,
+                                              fontStyle:
+                                                  FlutterFlowTheme.of(context)
+                                                      .titleMedium
+                                                      .fontStyle,
+                                            ),
+                                            letterSpacing: 0.0,
+                                            fontWeight:
+                                                FlutterFlowTheme.of(context)
+                                                    .titleMedium
+                                                    .fontWeight,
+                                            fontStyle:
+                                                FlutterFlowTheme.of(context)
+                                                    .titleMedium
+                                                    .fontStyle,
+                                          ),
+                                    ),
+                                    Text(
+                                      'Showcase your service',
+                                      style: FlutterFlowTheme.of(context)
+                                          .bodySmall
+                                          .override(
+                                            font: GoogleFonts.notoSansJp(
+                                              fontWeight:
+                                                  FlutterFlowTheme.of(context)
+                                                      .bodySmall
+                                                      .fontWeight,
+                                              fontStyle: FontStyle.italic,
+                                            ),
+                                            letterSpacing: 0.0,
+                                            fontWeight:
+                                                FlutterFlowTheme.of(context)
+                                                    .bodySmall
+                                                    .fontWeight,
+                                            fontStyle: FontStyle.italic,
+                                          ),
+                                    ),
+                                    wrapWithModel(
+                                      model: _model.galleryImagesModel,
+                                      updateCallback: () => safeSetState(() {}),
+                                      child: GalleryImagesWidget(
+                                        callback: (galleryImages,
+                                            gallerySaved) async {
+                                          _model.updateProviderDataStruct(
+                                            (e) => e
+                                              ..galleryImages = _model
+                                                  .galleryImagesModel.gallery
+                                                  .toList(),
+                                          );
+                                          _model.gallerySaved = true;
+                                          safeSetState(() {});
+                                        },
+                                      ),
+                                    ),
+                                  ].divide(SizedBox(height: 10)),
+                                ),
+                                Divider(
+                                  thickness: 1,
+                                  color: FlutterFlowTheme.of(context)
+                                      .menuButtonsSet1b,
+                                ),
+                                Column(
+                                  mainAxisSize: MainAxisSize.max,
+                                  crossAxisAlignment: CrossAxisAlignment.center,
+                                  children: [
+                                    Column(
+                                      mainAxisSize: MainAxisSize.max,
+                                      children: [
+                                        Text(
+                                          'Service Offered',
+                                          style: FlutterFlowTheme.of(context)
+                                              .titleMedium
+                                              .override(
+                                                font: GoogleFonts
+                                                    .bricolageGrotesque(
+                                                  fontWeight:
+                                                      FlutterFlowTheme.of(
+                                                              context)
+                                                          .titleMedium
+                                                          .fontWeight,
+                                                  fontStyle:
+                                                      FlutterFlowTheme.of(
+                                                              context)
+                                                          .titleMedium
+                                                          .fontStyle,
+                                                ),
+                                                letterSpacing: 0.0,
+                                                fontWeight:
+                                                    FlutterFlowTheme.of(context)
+                                                        .titleMedium
+                                                        .fontWeight,
+                                                fontStyle:
+                                                    FlutterFlowTheme.of(context)
+                                                        .titleMedium
+                                                        .fontStyle,
+                                              ),
+                                        ),
+                                        Text(
+                                          'Pick the service you offer',
+                                          style: FlutterFlowTheme.of(context)
+                                              .bodySmall
+                                              .override(
+                                                font: GoogleFonts.notoSansJp(
+                                                  fontWeight:
+                                                      FlutterFlowTheme.of(
+                                                              context)
+                                                          .bodySmall
+                                                          .fontWeight,
+                                                  fontStyle: FontStyle.italic,
+                                                ),
+                                                letterSpacing: 0.0,
+                                                fontWeight:
+                                                    FlutterFlowTheme.of(context)
+                                                        .bodySmall
+                                                        .fontWeight,
+                                                fontStyle: FontStyle.italic,
+                                              ),
+                                        ),
+                                      ],
+                                    ),
+                                    AuthUserStreamWidget(
+                                      builder: (context) =>
+                                          FlutterFlowChoiceChips(
+                                        options: [
+                                          ChipData('Plumbing'),
+                                          ChipData('Painting'),
+                                          ChipData('Gardening'),
+                                          ChipData('Hairdressing'),
+                                          ChipData('Babysitting'),
+                                          ChipData('Tutoring'),
+                                          ChipData('Cleaning'),
+                                          ChipData('Electrician'),
+                                          ChipData('Retail')
+                                        ],
+                                        onChanged: (val) async {
+                                          safeSetState(() => _model
+                                              .servicesChoiceChipsValues = val);
+                                          _model.updateProviderDataStruct(
+                                            (e) => e
+                                              ..providerServices = _model
+                                                  .servicesChoiceChipsValues!
+                                                  .toList(),
+                                          );
+                                          safeSetState(() {});
+                                        },
+                                        selectedChipStyle: ChipStyle(
+                                          backgroundColor:
+                                              FlutterFlowTheme.of(context)
+                                                  .secondary,
+                                          textStyle: FlutterFlowTheme.of(
+                                                  context)
+                                              .bodyMedium
+                                              .override(
+                                                font: GoogleFonts.notoSansJp(
+                                                  fontWeight: FontWeight.w500,
+                                                  fontStyle:
+                                                      FlutterFlowTheme.of(
+                                                              context)
+                                                          .bodyMedium
+                                                          .fontStyle,
+                                                ),
+                                                color:
+                                                    FlutterFlowTheme.of(context)
+                                                        .primaryWhite,
+                                                letterSpacing: 0.0,
+                                                fontWeight: FontWeight.w500,
+                                                fontStyle:
+                                                    FlutterFlowTheme.of(context)
+                                                        .bodyMedium
+                                                        .fontStyle,
+                                                lineHeight: 1,
+                                              ),
+                                          iconColor:
+                                              FlutterFlowTheme.of(context)
+                                                  .menuButtonsSet2a,
+                                          iconSize: 16,
+                                          labelPadding: EdgeInsets.all(3),
+                                          elevation: 0,
+                                          borderColor:
+                                              FlutterFlowTheme.of(context)
+                                                  .secondary,
+                                          borderRadius:
+                                              BorderRadius.circular(12),
+                                        ),
+                                        unselectedChipStyle: ChipStyle(
+                                          backgroundColor:
+                                              FlutterFlowTheme.of(context)
+                                                  .primaryBackground,
+                                          textStyle: FlutterFlowTheme.of(
+                                                  context)
+                                              .bodyMedium
+                                              .override(
+                                                font: GoogleFonts.notoSansJp(
+                                                  fontWeight: FontWeight.w500,
+                                                  fontStyle:
+                                                      FlutterFlowTheme.of(
+                                                              context)
+                                                          .bodyMedium
+                                                          .fontStyle,
+                                                ),
+                                                color:
+                                                    FlutterFlowTheme.of(context)
+                                                        .menuButtonsSet2b,
+                                                letterSpacing: 0.0,
+                                                fontWeight: FontWeight.w500,
+                                                fontStyle:
+                                                    FlutterFlowTheme.of(context)
+                                                        .bodyMedium
+                                                        .fontStyle,
+                                                lineHeight: 1,
+                                              ),
+                                          iconColor:
+                                              FlutterFlowTheme.of(context)
+                                                  .menuButtonsSet2b,
+                                          iconSize: 14,
+                                          labelPadding: EdgeInsets.all(3),
+                                          elevation: 0,
+                                          borderColor:
+                                              FlutterFlowTheme.of(context)
+                                                  .menuButtonsSet2b,
+                                          borderRadius:
+                                              BorderRadius.circular(12),
+                                        ),
+                                        chipSpacing: 8,
+                                        rowSpacing: 8,
+                                        multiselect: true,
+                                        initialized:
+                                            _model.servicesChoiceChipsValues !=
+                                                null,
+                                        alignment: WrapAlignment.center,
+                                        controller: _model
+                                                .servicesChoiceChipsValueController ??=
+                                            FormFieldController<List<String>>(
+                                          currentUserDocument
+                                              ?.userProviderDetails
+                                              ?.providerServices,
+                                        ),
+                                        wrapped: true,
+                                      ),
+                                    ),
+                                    Align(
+                                      alignment: AlignmentDirectional(1, 0),
+                                      child: Stack(
+                                        alignment: AlignmentDirectional(1, 0),
+                                        children: [
+                                          if (_model.servicesSaved == false)
+                                            Align(
+                                              alignment:
+                                                  AlignmentDirectional(1, 0),
+                                              child: FFButtonWidget(
+                                                onPressed: () async {
+                                                  _model.servicesSaved = true;
+                                                  safeSetState(() {});
+                                                },
+                                                text: 'SAVE',
+                                                options: FFButtonOptions(
+                                                  height: 40,
+                                                  padding: EdgeInsets.all(12),
+                                                  iconPadding:
+                                                      EdgeInsetsDirectional
+                                                          .fromSTEB(0, 0, 0, 0),
+                                                  color: Color(0x000000FF),
+                                                  textStyle:
+                                                      FlutterFlowTheme.of(
+                                                              context)
+                                                          .titleSmall
+                                                          .override(
+                                                            font: GoogleFonts
+                                                                .notoSansJp(
+                                                              fontWeight:
+                                                                  FlutterFlowTheme.of(
+                                                                          context)
+                                                                      .titleSmall
+                                                                      .fontWeight,
+                                                              fontStyle:
+                                                                  FlutterFlowTheme.of(
+                                                                          context)
+                                                                      .titleSmall
+                                                                      .fontStyle,
+                                                            ),
+                                                            color: FlutterFlowTheme
+                                                                    .of(context)
+                                                                .menuButtonsSet2b,
+                                                            fontSize: 14,
+                                                            letterSpacing: 0.0,
+                                                            fontWeight:
+                                                                FlutterFlowTheme.of(
+                                                                        context)
+                                                                    .titleSmall
+                                                                    .fontWeight,
+                                                            fontStyle:
+                                                                FlutterFlowTheme.of(
+                                                                        context)
+                                                                    .titleSmall
+                                                                    .fontStyle,
+                                                          ),
+                                                  borderSide: BorderSide(
+                                                    color: FlutterFlowTheme.of(
+                                                            context)
+                                                        .menuButtonsSet2b,
+                                                    width: 2,
+                                                  ),
+                                                  borderRadius:
+                                                      BorderRadius.circular(12),
+                                                  hoverColor:
+                                                      FlutterFlowTheme.of(
+                                                              context)
+                                                          .menuButtonsSet2b,
+                                                  hoverBorderSide: BorderSide(
+                                                    color: FlutterFlowTheme.of(
+                                                            context)
+                                                        .menuButtonsSet2b,
+                                                    width: 2,
+                                                  ),
+                                                  hoverTextColor:
+                                                      FlutterFlowTheme.of(
+                                                              context)
+                                                          .menuButtonsSet2a,
+                                                ),
+                                              ),
+                                            ),
+                                          if (_model.servicesSaved == true)
+                                            Row(
+                                              mainAxisSize: MainAxisSize.max,
+                                              mainAxisAlignment:
+                                                  MainAxisAlignment.end,
+                                              children: [
+                                                Align(
+                                                  alignment:
+                                                      AlignmentDirectional(
+                                                          1, 0),
+                                                  child: Icon(
+                                                    Icons
+                                                        .check_circle_outline_sharp,
+                                                    color: FlutterFlowTheme.of(
+                                                            context)
+                                                        .primary,
+                                                    size: 35,
+                                                  ),
+                                                ),
+                                                FlutterFlowIconButton(
+                                                  borderRadius: 8,
+                                                  buttonSize: 40,
+                                                  icon: FaIcon(
+                                                    FontAwesomeIcons.redoAlt,
+                                                    color: FlutterFlowTheme.of(
+                                                            context)
+                                                        .secondaryText,
+                                                    size: 24,
+                                                  ),
+                                                  onPressed: () async {
+                                                    _model.servicesSaved =
+                                                        false;
+                                                    _model
+                                                        .updateProviderDataStruct(
+                                                      (e) => e
+                                                        ..providerServices = [],
+                                                    );
+                                                    safeSetState(() {});
+                                                    safeSetState(() {
+                                                      _model
+                                                          .servicesChoiceChipsValueController
+                                                          ?.reset();
+                                                    });
+                                                  },
+                                                ),
+                                              ].divide(SizedBox(width: 6)),
+                                            ),
+                                        ],
+                                      ),
+                                    ),
+                                  ].divide(SizedBox(height: 12)),
+                                ),
+                                Divider(
+                                  thickness: 1,
+                                  color: FlutterFlowTheme.of(context)
+                                      .menuButtonsSet1b,
+                                ),
+                                Column(
+                                  mainAxisSize: MainAxisSize.max,
+                                  crossAxisAlignment: CrossAxisAlignment.center,
+                                  children: [
+                                    Column(
+                                      mainAxisSize: MainAxisSize.max,
+                                      children: [
+                                        Text(
+                                          'Products Offered',
+                                          style: FlutterFlowTheme.of(context)
+                                              .titleMedium
+                                              .override(
+                                                font: GoogleFonts
+                                                    .bricolageGrotesque(
+                                                  fontWeight:
+                                                      FlutterFlowTheme.of(
+                                                              context)
+                                                          .titleMedium
+                                                          .fontWeight,
+                                                  fontStyle:
+                                                      FlutterFlowTheme.of(
+                                                              context)
+                                                          .titleMedium
+                                                          .fontStyle,
+                                                ),
+                                                letterSpacing: 0.0,
+                                                fontWeight:
+                                                    FlutterFlowTheme.of(context)
+                                                        .titleMedium
+                                                        .fontWeight,
+                                                fontStyle:
+                                                    FlutterFlowTheme.of(context)
+                                                        .titleMedium
+                                                        .fontStyle,
+                                              ),
+                                        ),
+                                        Text(
+                                          'Pick the products you sell',
+                                          style: FlutterFlowTheme.of(context)
+                                              .bodySmall
+                                              .override(
+                                                font: GoogleFonts.notoSansJp(
+                                                  fontWeight:
+                                                      FlutterFlowTheme.of(
+                                                              context)
+                                                          .bodySmall
+                                                          .fontWeight,
+                                                  fontStyle: FontStyle.italic,
+                                                ),
+                                                letterSpacing: 0.0,
+                                                fontWeight:
+                                                    FlutterFlowTheme.of(context)
+                                                        .bodySmall
+                                                        .fontWeight,
+                                                fontStyle: FontStyle.italic,
+                                              ),
+                                        ),
+                                      ],
+                                    ),
+                                    AuthUserStreamWidget(
+                                      builder: (context) =>
+                                          FlutterFlowChoiceChips(
+                                        options: [
+                                          ChipData('Food'),
+                                          ChipData('Clothing'),
+                                          ChipData('Beauty'),
+                                          ChipData('Home'),
+                                          ChipData('Gifts'),
+                                          ChipData('Kids'),
+                                          ChipData('Electronics'),
+                                          ChipData('Other')
+                                        ],
+                                        onChanged: (val) async {
+                                          safeSetState(() => _model
+                                              .productsChoiceChipsValues = val);
+                                          _model.updateProviderDataStruct(
+                                            (e) => e
+                                              ..providerProducts = _model
+                                                  .productsChoiceChipsValues!
+                                                  .toList(),
+                                          );
+                                          safeSetState(() {});
+                                        },
+                                        selectedChipStyle: ChipStyle(
+                                          backgroundColor:
+                                              FlutterFlowTheme.of(context)
+                                                  .secondary,
+                                          textStyle: FlutterFlowTheme.of(
+                                                  context)
+                                              .bodyMedium
+                                              .override(
+                                                font: GoogleFonts.notoSansJp(
+                                                  fontWeight: FontWeight.w500,
+                                                  fontStyle:
+                                                      FlutterFlowTheme.of(
+                                                              context)
+                                                          .bodyMedium
+                                                          .fontStyle,
+                                                ),
+                                                color:
+                                                    FlutterFlowTheme.of(context)
+                                                        .primaryWhite,
+                                                letterSpacing: 0.0,
+                                                fontWeight: FontWeight.w500,
+                                                fontStyle:
+                                                    FlutterFlowTheme.of(context)
+                                                        .bodyMedium
+                                                        .fontStyle,
+                                              ),
+                                          iconColor:
+                                              FlutterFlowTheme.of(context).info,
+                                          iconSize: 16,
+                                          labelPadding: EdgeInsets.all(3),
+                                          elevation: 0,
+                                          borderColor:
+                                              FlutterFlowTheme.of(context)
+                                                  .secondary,
+                                          borderRadius:
+                                              BorderRadius.circular(12),
+                                        ),
+                                        unselectedChipStyle: ChipStyle(
+                                          backgroundColor:
+                                              FlutterFlowTheme.of(context)
+                                                  .primaryBackground,
+                                          textStyle: FlutterFlowTheme.of(
+                                                  context)
+                                              .bodyMedium
+                                              .override(
+                                                font: GoogleFonts.notoSansJp(
+                                                  fontWeight: FontWeight.w500,
+                                                  fontStyle:
+                                                      FlutterFlowTheme.of(
+                                                              context)
+                                                          .bodyMedium
+                                                          .fontStyle,
+                                                ),
+                                                color:
+                                                    FlutterFlowTheme.of(context)
+                                                        .menuButtonsSet2b,
+                                                letterSpacing: 0.0,
+                                                fontWeight: FontWeight.w500,
+                                                fontStyle:
+                                                    FlutterFlowTheme.of(context)
+                                                        .bodyMedium
+                                                        .fontStyle,
+                                              ),
+                                          iconColor:
+                                              FlutterFlowTheme.of(context)
+                                                  .primaryText,
+                                          iconSize: 14,
+                                          labelPadding: EdgeInsets.all(3),
+                                          elevation: 0,
+                                          borderColor:
+                                              FlutterFlowTheme.of(context)
+                                                  .menuButtonsSet2b,
+                                          borderRadius:
+                                              BorderRadius.circular(12),
+                                        ),
+                                        chipSpacing: 8,
+                                        rowSpacing: 8,
+                                        multiselect: true,
+                                        initialized:
+                                            _model.productsChoiceChipsValues !=
+                                                null,
+                                        alignment: WrapAlignment.center,
+                                        controller: _model
+                                                .productsChoiceChipsValueController ??=
+                                            FormFieldController<List<String>>(
+                                          currentUserDocument
+                                              ?.userProviderDetails
+                                              ?.providerProducts,
+                                        ),
+                                        wrapped: true,
+                                      ),
+                                    ),
+                                    Align(
+                                      alignment: AlignmentDirectional(1, 0),
+                                      child: Stack(
+                                        alignment: AlignmentDirectional(1, 0),
+                                        children: [
+                                          if (_model.productsSaved == false)
+                                            Align(
+                                              alignment:
+                                                  AlignmentDirectional(1, 0),
+                                              child: FFButtonWidget(
+                                                onPressed: () async {
+                                                  _model.productsSaved = true;
+                                                  safeSetState(() {});
+                                                },
+                                                text: 'SAVE',
+                                                options: FFButtonOptions(
+                                                  height: 40,
+                                                  padding: EdgeInsets.all(12),
+                                                  iconPadding:
+                                                      EdgeInsetsDirectional
+                                                          .fromSTEB(0, 0, 0, 0),
+                                                  color: Color(0x000000FF),
+                                                  textStyle:
+                                                      FlutterFlowTheme.of(
+                                                              context)
+                                                          .titleSmall
+                                                          .override(
+                                                            font: GoogleFonts
+                                                                .notoSansJp(
+                                                              fontWeight:
+                                                                  FlutterFlowTheme.of(
+                                                                          context)
+                                                                      .titleSmall
+                                                                      .fontWeight,
+                                                              fontStyle:
+                                                                  FlutterFlowTheme.of(
+                                                                          context)
+                                                                      .titleSmall
+                                                                      .fontStyle,
+                                                            ),
+                                                            color: FlutterFlowTheme
+                                                                    .of(context)
+                                                                .menuButtonsSet2b,
+                                                            fontSize: 14,
+                                                            letterSpacing: 0.0,
+                                                            fontWeight:
+                                                                FlutterFlowTheme.of(
+                                                                        context)
+                                                                    .titleSmall
+                                                                    .fontWeight,
+                                                            fontStyle:
+                                                                FlutterFlowTheme.of(
+                                                                        context)
+                                                                    .titleSmall
+                                                                    .fontStyle,
+                                                          ),
+                                                  borderSide: BorderSide(
+                                                    color: FlutterFlowTheme.of(
+                                                            context)
+                                                        .menuButtonsSet2b,
+                                                    width: 2,
+                                                  ),
+                                                  borderRadius:
+                                                      BorderRadius.circular(12),
+                                                  hoverColor:
+                                                      FlutterFlowTheme.of(
+                                                              context)
+                                                          .menuButtonsSet2b,
+                                                  hoverBorderSide: BorderSide(
+                                                    color: FlutterFlowTheme.of(
+                                                            context)
+                                                        .menuButtonsSet2b,
+                                                    width: 2,
+                                                  ),
+                                                  hoverTextColor:
+                                                      FlutterFlowTheme.of(
+                                                              context)
+                                                          .menuButtonsSet2a,
+                                                ),
+                                              ),
+                                            ),
+                                          if (_model.productsSaved == true)
+                                            Row(
+                                              mainAxisSize: MainAxisSize.max,
+                                              mainAxisAlignment:
+                                                  MainAxisAlignment.end,
+                                              children: [
+                                                Align(
+                                                  alignment:
+                                                      AlignmentDirectional(
+                                                          1, 0),
+                                                  child: Icon(
+                                                    Icons
+                                                        .check_circle_outline_sharp,
+                                                    color: FlutterFlowTheme.of(
+                                                            context)
+                                                        .primary,
+                                                    size: 35,
+                                                  ),
+                                                ),
+                                                FlutterFlowIconButton(
+                                                  borderRadius: 8,
+                                                  buttonSize: 40,
+                                                  icon: FaIcon(
+                                                    FontAwesomeIcons.redoAlt,
+                                                    color: FlutterFlowTheme.of(
+                                                            context)
+                                                        .secondaryText,
+                                                    size: 24,
+                                                  ),
+                                                  onPressed: () async {
+                                                    _model
+                                                        .updateProviderDataStruct(
+                                                      (e) => e
+                                                        ..providerProducts = [],
+                                                    );
+                                                    _model.productsSaved =
+                                                        false;
+                                                    safeSetState(() {});
+                                                    safeSetState(() {
+                                                      _model
+                                                          .productsChoiceChipsValueController
+                                                          ?.reset();
+                                                    });
+                                                  },
+                                                ),
+                                              ].divide(SizedBox(width: 6)),
+                                            ),
+                                        ],
+                                      ),
+                                    ),
+                                  ].divide(SizedBox(height: 12)),
+                                ),
+                                Divider(
+                                  thickness: 1,
+                                  color: FlutterFlowTheme.of(context)
+                                      .menuButtonsSet1b,
+                                ),
+                                Align(
+                                  alignment: AlignmentDirectional(0, 0),
+                                  child: Column(
+                                    mainAxisSize: MainAxisSize.max,
+                                    crossAxisAlignment:
+                                        CrossAxisAlignment.center,
+                                    children: [
+                                      Column(
+                                        mainAxisSize: MainAxisSize.max,
+                                        children: [
+                                          Text(
+                                            'Locations Serviced',
+                                            style: FlutterFlowTheme.of(context)
+                                                .titleMedium
+                                                .override(
+                                                  font: GoogleFonts
+                                                      .bricolageGrotesque(
+                                                    fontWeight:
+                                                        FlutterFlowTheme.of(
+                                                                context)
+                                                            .titleMedium
+                                                            .fontWeight,
+                                                    fontStyle:
+                                                        FlutterFlowTheme.of(
+                                                                context)
+                                                            .titleMedium
+                                                            .fontStyle,
+                                                  ),
+                                                  letterSpacing: 0.0,
+                                                  fontWeight:
+                                                      FlutterFlowTheme.of(
+                                                              context)
+                                                          .titleMedium
+                                                          .fontWeight,
+                                                  fontStyle:
+                                                      FlutterFlowTheme.of(
+                                                              context)
+                                                          .titleMedium
+                                                          .fontStyle,
+                                                ),
+                                          ),
+                                          Text(
+                                            'Select the location you service',
+                                            style: FlutterFlowTheme.of(context)
+                                                .bodySmall
+                                                .override(
+                                                  font: GoogleFonts.notoSansJp(
+                                                    fontWeight:
+                                                        FlutterFlowTheme.of(
+                                                                context)
+                                                            .bodySmall
+                                                            .fontWeight,
+                                                    fontStyle: FontStyle.italic,
+                                                  ),
+                                                  letterSpacing: 0.0,
+                                                  fontWeight:
+                                                      FlutterFlowTheme.of(
+                                                              context)
+                                                          .bodySmall
+                                                          .fontWeight,
+                                                  fontStyle: FontStyle.italic,
+                                                ),
+                                          ),
+                                        ],
+                                      ),
+                                      Align(
+                                        alignment: AlignmentDirectional(0, 0),
+                                        child: AuthUserStreamWidget(
+                                          builder: (context) =>
+                                              FlutterFlowChoiceChips(
+                                            options: [
+                                              ChipData('Bedfordview'),
+                                              ChipData('Edenvale'),
+                                              ChipData('Kloof')
+                                            ],
+                                            onChanged: (val) async {
+                                              safeSetState(() => _model
+                                                      .locationChoiceChipsValues =
+                                                  val);
+                                              _model.updateProviderDataStruct(
+                                                (e) => e
+                                                  ..providerServiceLocations =
+                                                      _model
+                                                          .locationChoiceChipsValues!
+                                                          .toList(),
+                                              );
+                                              safeSetState(() {});
+                                            },
+                                            selectedChipStyle: ChipStyle(
+                                              backgroundColor:
+                                                  FlutterFlowTheme.of(context)
+                                                      .secondary,
+                                              textStyle: FlutterFlowTheme.of(
+                                                      context)
+                                                  .bodyMedium
+                                                  .override(
+                                                    font:
+                                                        GoogleFonts.notoSansJp(
+                                                      fontWeight:
+                                                          FontWeight.w500,
+                                                      fontStyle:
+                                                          FlutterFlowTheme.of(
+                                                                  context)
+                                                              .bodyMedium
+                                                              .fontStyle,
+                                                    ),
+                                                    color: FlutterFlowTheme.of(
+                                                            context)
+                                                        .primaryWhite,
+                                                    letterSpacing: 0.0,
+                                                    fontWeight: FontWeight.w500,
+                                                    fontStyle:
+                                                        FlutterFlowTheme.of(
+                                                                context)
+                                                            .bodyMedium
+                                                            .fontStyle,
+                                                    lineHeight: 1,
+                                                  ),
+                                              iconColor:
+                                                  FlutterFlowTheme.of(context)
+                                                      .primaryText,
+                                              iconSize: 14,
+                                              labelPadding: EdgeInsets.all(3),
+                                              elevation: 0,
+                                              borderColor:
+                                                  FlutterFlowTheme.of(context)
+                                                      .secondary,
+                                              borderWidth: 1,
+                                              borderRadius:
+                                                  BorderRadius.circular(12),
+                                            ),
+                                            unselectedChipStyle: ChipStyle(
+                                              backgroundColor:
+                                                  FlutterFlowTheme.of(context)
+                                                      .primaryBackground,
+                                              textStyle: FlutterFlowTheme.of(
+                                                      context)
+                                                  .bodyMedium
+                                                  .override(
+                                                    font:
+                                                        GoogleFonts.notoSansJp(
+                                                      fontWeight:
+                                                          FontWeight.w500,
+                                                      fontStyle:
+                                                          FlutterFlowTheme.of(
+                                                                  context)
+                                                              .bodyMedium
+                                                              .fontStyle,
+                                                    ),
+                                                    color: FlutterFlowTheme.of(
+                                                            context)
+                                                        .menuButtonsSet2b,
+                                                    fontSize: 14,
+                                                    letterSpacing: 0.0,
+                                                    fontWeight: FontWeight.w500,
+                                                    fontStyle:
+                                                        FlutterFlowTheme.of(
+                                                                context)
+                                                            .bodyMedium
+                                                            .fontStyle,
+                                                    lineHeight: 1,
+                                                  ),
+                                              iconColor:
+                                                  FlutterFlowTheme.of(context)
+                                                      .menuButtonsSet2b,
+                                              iconSize: 14,
+                                              labelPadding: EdgeInsets.all(3),
+                                              elevation: 0,
+                                              borderColor:
+                                                  FlutterFlowTheme.of(context)
+                                                      .menuButtonsSet2b,
+                                              borderRadius:
+                                                  BorderRadius.circular(12),
+                                            ),
+                                            chipSpacing: 6,
+                                            rowSpacing: 6,
+                                            multiselect: true,
+                                            initialized: _model
+                                                    .locationChoiceChipsValues !=
+                                                null,
+                                            alignment: WrapAlignment.start,
+                                            controller: _model
+                                                    .locationChoiceChipsValueController ??=
+                                                FormFieldController<
+                                                    List<String>>(
+                                              currentUserDocument
+                                                  ?.userProviderDetails
+                                                  ?.providerServiceLocations,
+                                            ),
+                                            wrapped: true,
+                                          ),
+                                        ),
+                                      ),
+                                      Align(
+                                        alignment: AlignmentDirectional(1, 0),
+                                        child: Stack(
+                                          alignment: AlignmentDirectional(1, 0),
+                                          children: [
+                                            if (_model.serviceLocSaved == false)
+                                              Align(
+                                                alignment:
+                                                    AlignmentDirectional(1, 0),
+                                                child: FFButtonWidget(
+                                                  onPressed: () async {
+                                                    _model.serviceLocSaved =
+                                                        true;
+                                                    safeSetState(() {});
+                                                  },
+                                                  text: 'SAVE',
+                                                  options: FFButtonOptions(
+                                                    width: 84,
+                                                    height: 40,
+                                                    padding: EdgeInsets.all(12),
+                                                    iconPadding:
+                                                        EdgeInsetsDirectional
+                                                            .fromSTEB(
+                                                                0, 0, 0, 0),
+                                                    color: Color(0x000000FF),
+                                                    textStyle:
+                                                        FlutterFlowTheme.of(
+                                                                context)
+                                                            .titleSmall
+                                                            .override(
+                                                              font: GoogleFonts
+                                                                  .notoSansJp(
+                                                                fontWeight: FlutterFlowTheme.of(
+                                                                        context)
+                                                                    .titleSmall
+                                                                    .fontWeight,
+                                                                fontStyle: FlutterFlowTheme.of(
+                                                                        context)
+                                                                    .titleSmall
+                                                                    .fontStyle,
+                                                              ),
+                                                              color: FlutterFlowTheme
+                                                                      .of(context)
+                                                                  .menuButtonsSet2b,
+                                                              fontSize: 14,
+                                                              letterSpacing:
+                                                                  0.0,
+                                                              fontWeight:
+                                                                  FlutterFlowTheme.of(
+                                                                          context)
+                                                                      .titleSmall
+                                                                      .fontWeight,
+                                                              fontStyle:
+                                                                  FlutterFlowTheme.of(
+                                                                          context)
+                                                                      .titleSmall
+                                                                      .fontStyle,
+                                                            ),
+                                                    borderSide: BorderSide(
+                                                      color:
+                                                          FlutterFlowTheme.of(
+                                                                  context)
+                                                              .menuButtonsSet2b,
+                                                      width: 2,
+                                                    ),
+                                                    borderRadius:
+                                                        BorderRadius.circular(
+                                                            12),
+                                                    hoverColor:
+                                                        FlutterFlowTheme.of(
+                                                                context)
+                                                            .menuButtonsSet2b,
+                                                    hoverBorderSide: BorderSide(
+                                                      color:
+                                                          FlutterFlowTheme.of(
+                                                                  context)
+                                                              .menuButtonsSet2b,
+                                                      width: 2,
+                                                    ),
+                                                    hoverTextColor:
+                                                        FlutterFlowTheme.of(
+                                                                context)
+                                                            .menuButtonsSet2a,
+                                                  ),
+                                                ),
+                                              ),
+                                            if (_model.serviceLocSaved)
+                                              Row(
+                                                mainAxisSize: MainAxisSize.max,
+                                                mainAxisAlignment:
+                                                    MainAxisAlignment.end,
+                                                children: [
+                                                  Align(
+                                                    alignment:
+                                                        AlignmentDirectional(
+                                                            1, 0),
+                                                    child: Icon(
+                                                      Icons
+                                                          .check_circle_outline_sharp,
+                                                      color:
+                                                          FlutterFlowTheme.of(
+                                                                  context)
+                                                              .primary,
+                                                      size: 35,
+                                                    ),
+                                                  ),
+                                                  FlutterFlowIconButton(
+                                                    borderRadius: 8,
+                                                    buttonSize: 40,
+                                                    icon: FaIcon(
+                                                      FontAwesomeIcons.redoAlt,
+                                                      color:
+                                                          FlutterFlowTheme.of(
+                                                                  context)
+                                                              .secondaryText,
+                                                      size: 24,
+                                                    ),
+                                                    onPressed: () async {
+                                                      _model.serviceLocSaved =
+                                                          false;
+                                                      _model
+                                                          .updateProviderDataStruct(
+                                                        (e) => e
+                                                          ..providerServiceLocations =
+                                                              [],
+                                                      );
+                                                      safeSetState(() {});
+                                                      safeSetState(() {
+                                                        _model
+                                                            .locationChoiceChipsValueController
+                                                            ?.reset();
+                                                      });
+                                                    },
+                                                  ),
+                                                ].divide(SizedBox(width: 6)),
+                                              ),
+                                          ],
+                                        ),
+                                      ),
+                                    ].divide(SizedBox(height: 12)),
+                                  ),
+                                ),
+                              ].divide(SizedBox(height: 24)),
+                            ),
+                          ),
+                        ),
+                        Align(
+                          alignment: AlignmentDirectional(0, 1),
+                          child: Padding(
+                            padding:
+                                EdgeInsetsDirectional.fromSTEB(0, 0, 0, 48),
+                            child: Stack(
+                              alignment: AlignmentDirectional(0, 0),
+                              children: [
+                                Column(
+                                  mainAxisSize: MainAxisSize.min,
+                                  children: [
+                                    Divider(
+                                      height: 0,
+                                      thickness: 2,
+                                      color:
+                                          FlutterFlowTheme.of(context).primary,
+                                    ),
+                                  ],
+                                ),
+                                Align(
+                                  alignment: AlignmentDirectional(0, 1),
+                                  child: Padding(
+                                    padding: EdgeInsetsDirectional.fromSTEB(
+                                        0, 12, 0, 12),
+                                    child: FFButtonWidget(
+                                      onPressed: () async {
+                                        var _shouldSetState = false;
+                                        _model.saveProviderDetailsFormCreate =
+                                            true;
+                                        if (_model.formKey.currentState ==
+                                                null ||
+                                            !_model.formKey.currentState!
+                                                .validate()) {
+                                          safeSetState(() => _model
+                                                  .saveProviderDetailsFormCreate =
+                                              false);
+                                          return;
+                                        }
+                                        _shouldSetState = true;
+                                        if (_model.gallerySaved != true) {
+                                          var confirmDialogResponse =
+                                              await showDialog<bool>(
+                                                    context: context,
+                                                    builder:
+                                                        (alertDialogContext) {
+                                                      return AlertDialog(
+                                                        title: Text(
+                                                            'Gallery Images Not Saved'),
+                                                        content: Text(
+                                                            'You have not uploaded/saved your gallery images. '),
+                                                        actions: [
+                                                          TextButton(
+                                                            onPressed: () =>
+                                                                Navigator.pop(
+                                                                    alertDialogContext,
+                                                                    false),
+                                                            child: Text(
+                                                                'Proceed without images'),
+                                                          ),
+                                                          TextButton(
+                                                            onPressed: () =>
+                                                                Navigator.pop(
+                                                                    alertDialogContext,
+                                                                    true),
+                                                            child: Text(
+                                                                'Return to profile creation'),
+                                                          ),
+                                                        ],
+                                                      );
+                                                    },
+                                                  ) ??
+                                                  false;
+                                          if (confirmDialogResponse) {
+                                            Navigator.pop(context);
+                                            if (_shouldSetState)
+                                              safeSetState(() {});
+                                            return;
+                                          }
+                                        }
+
+                                        var providersRecordReference =
+                                            ProvidersRecord.collection.doc();
+                                        await providersRecordReference.set({
+                                          ...createProvidersRecordData(
+                                            providerAdminDetails:
+                                                updateUserDetailsStruct(
+                                              currentUserDocument
+                                                  ?.personalDetails,
+                                              clearUnsetFields: false,
+                                              create: true,
+                                            ),
+                                            providerDetails:
+                                                createProviderDetailsStruct(
+                                              adminRef: currentUserReference,
+                                              profileLogoPic: _model
+                                                  .uploadedFileUrl_providerLogoImageCreate,
+                                              providerAbout: _model
+                                                  .aboutProviderTextController
+                                                  .text,
+                                              providerName: _model
+                                                  .providerNameTextController
+                                                  .text,
+                                              fieldValues: {
+                                                'gallery_images':
+                                                    getGalleryImageListFirestoreData(
+                                                  _model.galleryImagesModel
+                                                      .gallery,
+                                                ),
+                                                'provider_service_locations':
+                                                    _model
+                                                        .locationChoiceChipsValues,
+                                                'provider_services': _model
+                                                    .servicesChoiceChipsValues,
+                                                'provider_products': _model
+                                                    .productsChoiceChipsValues,
+                                              },
+                                              clearUnsetFields: false,
+                                              create: true,
+                                            ),
+                                            providerVerifiedStatus:
+                                                VerifiedStatus.unread,
+                                            providerNameLc:
+                                                functions.toLowerCaseName(_model
+                                                    .providerNameTextController
+                                                    .text),
+                                            providerName: _model
+                                                .providerNameTextController
+                                                .text,
+                                          ),
+                                          ...mapToFirestore(
+                                            {
+                                              'created_at':
+                                                  FieldValue.serverTimestamp(),
+                                              'updated_at':
+                                                  FieldValue.serverTimestamp(),
+                                            },
+                                          ),
+                                        });
+                                        _model.newProvider = ProvidersRecord
+                                            .getDocumentFromData({
+                                          ...createProvidersRecordData(
+                                            providerAdminDetails:
+                                                updateUserDetailsStruct(
+                                              currentUserDocument
+                                                  ?.personalDetails,
+                                              clearUnsetFields: false,
+                                              create: true,
+                                            ),
+                                            providerDetails:
+                                                createProviderDetailsStruct(
+                                              adminRef: currentUserReference,
+                                              profileLogoPic: _model
+                                                  .uploadedFileUrl_providerLogoImageCreate,
+                                              providerAbout: _model
+                                                  .aboutProviderTextController
+                                                  .text,
+                                              providerName: _model
+                                                  .providerNameTextController
+                                                  .text,
+                                              fieldValues: {
+                                                'gallery_images':
+                                                    getGalleryImageListFirestoreData(
+                                                  _model.galleryImagesModel
+                                                      .gallery,
+                                                ),
+                                                'provider_service_locations':
+                                                    _model
+                                                        .locationChoiceChipsValues,
+                                                'provider_services': _model
+                                                    .servicesChoiceChipsValues,
+                                                'provider_products': _model
+                                                    .productsChoiceChipsValues,
+                                              },
+                                              clearUnsetFields: false,
+                                              create: true,
+                                            ),
+                                            providerVerifiedStatus:
+                                                VerifiedStatus.unread,
+                                            providerNameLc:
+                                                functions.toLowerCaseName(_model
+                                                    .providerNameTextController
+                                                    .text),
+                                            providerName: _model
+                                                .providerNameTextController
+                                                .text,
+                                          ),
+                                          ...mapToFirestore(
+                                            {
+                                              'created_at': DateTime.now(),
+                                              'updated_at': DateTime.now(),
+                                            },
+                                          ),
+                                        }, providersRecordReference);
+                                        _shouldSetState = true;
+
+                                        var notificationsRecordReference1 =
+                                            NotificationsRecord.createDoc(
+                                                FFAppState().appAdmin!);
+                                        await notificationsRecordReference1
+                                            .set({
+                                          ...createNotificationsRecordData(
+                                            fromUser: currentUserReference,
+                                            providerVerification:
+                                                createProviderApprovalRequestStruct(
+                                              verifiedStatus:
+                                                  VerifiedStatus.unread,
+                                              providerProfileDetails:
+                                                  updateProviderDetailsStruct(
+                                                ProviderDetailsStruct(
+                                                  adminRef:
+                                                      currentUserReference,
+                                                  galleryImages: _model
+                                                      .galleryImagesModel
+                                                      .gallery,
+                                                  profileLogoPic: _model
+                                                      .uploadedFileUrl_providerLogoImageCreate,
+                                                  providerAbout: _model
+                                                      .aboutProviderTextController
+                                                      .text,
+                                                  providerName: _model
+                                                      .providerNameTextController
+                                                      .text,
+                                                  providerRef: _model
+                                                      .newProvider?.reference,
+                                                  providerServiceLocations: _model
+                                                      .locationChoiceChipsValues,
+                                                  providerServices: _model
+                                                      .servicesChoiceChipsValues,
+                                                  providerProducts: _model
+                                                      .productsChoiceChipsValues,
+                                                ),
+                                                clearUnsetFields: false,
+                                                create: true,
+                                              ),
+                                              clearUnsetFields: false,
+                                              create: true,
+                                            ),
+                                            senderDetails:
+                                                updateUserDetailsStruct(
+                                              currentUserDocument
+                                                  ?.personalDetails,
+                                              clearUnsetFields: false,
+                                              create: true,
+                                            ),
+                                            notificationType: NotificationTypes
+                                                .provider_verification_request,
+                                            docReferences:
+                                                createNotificationReferencesStruct(
+                                              provider:
+                                                  _model.newProvider?.reference,
+                                              clearUnsetFields: false,
+                                              create: true,
+                                            ),
+                                          ),
+                                          ...mapToFirestore(
+                                            {
+                                              'time_created':
+                                                  FieldValue.serverTimestamp(),
+                                            },
+                                          ),
+                                        });
+                                        _model.newNotification =
+                                            NotificationsRecord
+                                                .getDocumentFromData({
+                                          ...createNotificationsRecordData(
+                                            fromUser: currentUserReference,
+                                            providerVerification:
+                                                createProviderApprovalRequestStruct(
+                                              verifiedStatus:
+                                                  VerifiedStatus.unread,
+                                              providerProfileDetails:
+                                                  updateProviderDetailsStruct(
+                                                ProviderDetailsStruct(
+                                                  adminRef:
+                                                      currentUserReference,
+                                                  galleryImages: _model
+                                                      .galleryImagesModel
+                                                      .gallery,
+                                                  profileLogoPic: _model
+                                                      .uploadedFileUrl_providerLogoImageCreate,
+                                                  providerAbout: _model
+                                                      .aboutProviderTextController
+                                                      .text,
+                                                  providerName: _model
+                                                      .providerNameTextController
+                                                      .text,
+                                                  providerRef: _model
+                                                      .newProvider?.reference,
+                                                  providerServiceLocations: _model
+                                                      .locationChoiceChipsValues,
+                                                  providerServices: _model
+                                                      .servicesChoiceChipsValues,
+                                                  providerProducts: _model
+                                                      .productsChoiceChipsValues,
+                                                ),
+                                                clearUnsetFields: false,
+                                                create: true,
+                                              ),
+                                              clearUnsetFields: false,
+                                              create: true,
+                                            ),
+                                            senderDetails:
+                                                updateUserDetailsStruct(
+                                              currentUserDocument
+                                                  ?.personalDetails,
+                                              clearUnsetFields: false,
+                                              create: true,
+                                            ),
+                                            notificationType: NotificationTypes
+                                                .provider_verification_request,
+                                            docReferences:
+                                                createNotificationReferencesStruct(
+                                              provider:
+                                                  _model.newProvider?.reference,
+                                              clearUnsetFields: false,
+                                              create: true,
+                                            ),
+                                          ),
+                                          ...mapToFirestore(
+                                            {
+                                              'time_created': DateTime.now(),
+                                            },
+                                          ),
+                                        }, notificationsRecordReference1);
+                                        _shouldSetState = true;
+
+                                        var notificationsRecordReference2 =
+                                            NotificationsRecord.createDoc(
+                                                FFAppState().astechAdmin!);
+                                        await notificationsRecordReference2
+                                            .set({
+                                          ...createNotificationsRecordData(
+                                            fromUser: currentUserReference,
+                                            providerVerification:
+                                                createProviderApprovalRequestStruct(
+                                              verifiedStatus:
+                                                  VerifiedStatus.unread,
+                                              providerProfileDetails:
+                                                  updateProviderDetailsStruct(
+                                                ProviderDetailsStruct(
+                                                  adminRef:
+                                                      currentUserReference,
+                                                  galleryImages: _model
+                                                      .galleryImagesModel
+                                                      .gallery,
+                                                  profileLogoPic: _model
+                                                      .uploadedFileUrl_providerLogoImageCreate,
+                                                  providerAbout: _model
+                                                      .aboutProviderTextController
+                                                      .text,
+                                                  providerName: _model
+                                                      .providerNameTextController
+                                                      .text,
+                                                  providerRef: _model
+                                                      .newProvider?.reference,
+                                                  providerServiceLocations: _model
+                                                      .locationChoiceChipsValues,
+                                                  providerServices: _model
+                                                      .servicesChoiceChipsValues,
+                                                  providerProducts: _model
+                                                      .productsChoiceChipsValues,
+                                                ),
+                                                clearUnsetFields: false,
+                                                create: true,
+                                              ),
+                                              clearUnsetFields: false,
+                                              create: true,
+                                            ),
+                                            senderDetails:
+                                                updateUserDetailsStruct(
+                                              currentUserDocument
+                                                  ?.personalDetails,
+                                              clearUnsetFields: false,
+                                              create: true,
+                                            ),
+                                            notificationType: NotificationTypes
+                                                .provider_verification_request,
+                                            docReferences:
+                                                createNotificationReferencesStruct(
+                                              provider:
+                                                  _model.newProvider?.reference,
+                                              clearUnsetFields: false,
+                                              create: true,
+                                            ),
+                                          ),
+                                          ...mapToFirestore(
+                                            {
+                                              'time_created':
+                                                  FieldValue.serverTimestamp(),
+                                            },
+                                          ),
+                                        });
+                                        _model.newNotificationAstech =
+                                            NotificationsRecord
+                                                .getDocumentFromData({
+                                          ...createNotificationsRecordData(
+                                            fromUser: currentUserReference,
+                                            providerVerification:
+                                                createProviderApprovalRequestStruct(
+                                              verifiedStatus:
+                                                  VerifiedStatus.unread,
+                                              providerProfileDetails:
+                                                  updateProviderDetailsStruct(
+                                                ProviderDetailsStruct(
+                                                  adminRef:
+                                                      currentUserReference,
+                                                  galleryImages: _model
+                                                      .galleryImagesModel
+                                                      .gallery,
+                                                  profileLogoPic: _model
+                                                      .uploadedFileUrl_providerLogoImageCreate,
+                                                  providerAbout: _model
+                                                      .aboutProviderTextController
+                                                      .text,
+                                                  providerName: _model
+                                                      .providerNameTextController
+                                                      .text,
+                                                  providerRef: _model
+                                                      .newProvider?.reference,
+                                                  providerServiceLocations: _model
+                                                      .locationChoiceChipsValues,
+                                                  providerServices: _model
+                                                      .servicesChoiceChipsValues,
+                                                  providerProducts: _model
+                                                      .productsChoiceChipsValues,
+                                                ),
+                                                clearUnsetFields: false,
+                                                create: true,
+                                              ),
+                                              clearUnsetFields: false,
+                                              create: true,
+                                            ),
+                                            senderDetails:
+                                                updateUserDetailsStruct(
+                                              currentUserDocument
+                                                  ?.personalDetails,
+                                              clearUnsetFields: false,
+                                              create: true,
+                                            ),
+                                            notificationType: NotificationTypes
+                                                .provider_verification_request,
+                                            docReferences:
+                                                createNotificationReferencesStruct(
+                                              provider:
+                                                  _model.newProvider?.reference,
+                                              clearUnsetFields: false,
+                                              create: true,
+                                            ),
+                                          ),
+                                          ...mapToFirestore(
+                                            {
+                                              'time_created': DateTime.now(),
+                                            },
+                                          ),
+                                        }, notificationsRecordReference2);
+                                        _shouldSetState = true;
+                                        triggerPushNotification(
+                                          notificationTitle:
+                                              'A new pvider has requested verification',
+                                          notificationText:
+                                              '${currentUserDocument?.userProviderDetails?.providerName} has requested verification',
+                                          notificationSound: 'default',
+                                          userRefs:
+                                              FFAppState().admins.toList(),
+                                          initialPageName: 'login_splash_page',
+                                          parameterData: {},
+                                        );
+                                        unawaited(
+                                          () async {
+                                            await currentUserDocument!
+                                                .userProviderDetails
+                                                .providerRef!
+                                                .update(
+                                                    createProvidersRecordData(
+                                              providerDetails:
+                                                  createProviderDetailsStruct(
+                                                providerRef: _model
+                                                    .newProvider?.reference,
+                                                clearUnsetFields: false,
+                                              ),
+                                              notificationRef: _model
+                                                  .newNotification?.reference,
+                                            ));
+                                          }(),
+                                        );
+
+                                        await currentUserReference!
+                                            .update(createUsersRecordData(
+                                          userProviderDetails:
+                                              createProviderDetailsStruct(
+                                            adminRef: currentUserReference,
+                                            profileLogoPic: _model
+                                                .uploadedFileUrl_providerLogoImageCreate,
+                                            providerAbout: _model
+                                                .aboutProviderTextController
+                                                .text,
+                                            providerName: _model
+                                                .providerNameTextController
+                                                .text,
+                                            providerRef:
+                                                _model.newProvider?.reference,
+                                            fieldValues: {
+                                              'gallery_images':
+                                                  getGalleryImageListFirestoreData(
+                                                _model
+                                                    .galleryImagesModel.gallery,
+                                              ),
+                                              'provider_service_locations':
+                                                  _model
+                                                      .locationChoiceChipsValues,
+                                              'provider_services': _model
+                                                  .servicesChoiceChipsValues,
+                                              'provider_products': _model
+                                                  .productsChoiceChipsValues,
+                                            },
+                                            clearUnsetFields: false,
+                                          ),
+                                          providerProfileComplete: true,
+                                        ));
+
+                                        context.pushNamed(
+                                            HomeProviderWidget.routeName);
+
+                                        if (_shouldSetState)
+                                          safeSetState(() {});
+                                      },
+                                      text: 'LET\'S GO',
+                                      options: FFButtonOptions(
+                                        height: 48,
+                                        padding: EdgeInsets.all(14),
+                                        iconPadding:
+                                            EdgeInsetsDirectional.fromSTEB(
+                                                0, 0, 0, 0),
+                                        color: FlutterFlowTheme.of(context)
+                                            .primaryWhite,
+                                        textStyle: FlutterFlowTheme.of(context)
+                                            .titleSmall
+                                            .override(
+                                              font: GoogleFonts.notoSansJp(
+                                                fontWeight: FontWeight.bold,
+                                                fontStyle:
+                                                    FlutterFlowTheme.of(context)
+                                                        .titleSmall
+                                                        .fontStyle,
+                                              ),
+                                              color:
+                                                  FlutterFlowTheme.of(context)
+                                                      .secondary,
+                                              fontSize: 16,
+                                              letterSpacing: 0.0,
+                                              fontWeight: FontWeight.bold,
+                                              fontStyle:
+                                                  FlutterFlowTheme.of(context)
+                                                      .titleSmall
+                                                      .fontStyle,
+                                            ),
+                                        elevation: 6,
+                                        borderSide: BorderSide(
+                                          color: FlutterFlowTheme.of(context)
+                                              .primaryWhite,
+                                          width: 2,
+                                        ),
+                                        borderRadius: BorderRadius.circular(12),
+                                        hoverColor: FlutterFlowTheme.of(context)
+                                            .menuButtonsSet1a,
+                                        hoverBorderSide: BorderSide(
+                                          color: FlutterFlowTheme.of(context)
+                                              .menuButtonsSet1b,
+                                          width: 2,
+                                        ),
+                                        hoverTextColor:
+                                            FlutterFlowTheme.of(context)
+                                                .menuButtonsSet1b,
+                                      ),
+                                    ),
+                                  ),
+                                ),
+                              ],
+                            ),
+                          ),
+                        ),
+                      ].divide(SizedBox(height: 12)),
+                    ),
+                  ),
+                ),
+              ),
+            ),
+          ),
+        ));
+  }
+}
