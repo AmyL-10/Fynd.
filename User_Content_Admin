@@ -1,0 +1,1067 @@
+import '/auth/firebase_auth/auth_util.dart';
+import '/backend/backend.dart';
+import '/flutter_flow/flutter_flow_choice_chips.dart';
+import '/flutter_flow/flutter_flow_icon_button.dart';
+import '/flutter_flow/flutter_flow_theme.dart';
+import '/flutter_flow/flutter_flow_util.dart';
+import '/flutter_flow/flutter_flow_widgets.dart';
+import '/flutter_flow/form_field_controller.dart';
+import '/fynd/components/nav_app_bars/app_bar/app_bar_widget.dart';
+import '/fynd/components/nav_app_bars/provider_nav_bar/provider_nav_bar_widget.dart';
+import '/not_in_mvp1/buddy/buddy_delete_user_profile_admin/buddy_delete_user_profile_admin_widget.dart';
+import '/not_in_mvp1/buddy/buddy_manage_ugc_admin/buddy_manage_ugc_admin_widget.dart';
+import '/not_in_mvp1/provider_list_item/provider_list_item_widget.dart';
+import 'dart:ui';
+import '/flutter_flow/custom_functions.dart' as functions;
+import '/index.dart';
+import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:flutter/material.dart';
+import 'package:flutter_spinkit/flutter_spinkit.dart';
+import 'package:google_fonts/google_fonts.dart';
+import 'package:provider/provider.dart';
+
+import 'buddy_manage_user_content_admin_model.dart';
+export 'buddy_manage_user_content_admin_model.dart';
+
+class BuddyManageUserContentAdminWidget extends StatefulWidget {
+  const BuddyManageUserContentAdminWidget({
+    super.key,
+    required this.userDoc,
+  });
+
+  final UsersRecord? userDoc;
+
+  static String routeName = 'buddy_manage_user_content_admin';
+  static String routePath = 'buddyManageUserContentAdmin';
+
+  @override
+  State<BuddyManageUserContentAdminWidget> createState() =>
+      _BuddyManageUserContentAdminWidgetState();
+}
+
+class _BuddyManageUserContentAdminWidgetState
+    extends State<BuddyManageUserContentAdminWidget> {
+  late BuddyManageUserContentAdminModel _model;
+
+  final scaffoldKey = GlobalKey<ScaffoldState>();
+
+  @override
+  void initState() {
+    super.initState();
+    _model = createModel(context, () => BuddyManageUserContentAdminModel());
+
+    WidgetsBinding.instance.addPostFrameCallback((_) => safeSetState(() {}));
+  }
+
+  @override
+  void dispose() {
+    _model.dispose();
+
+    super.dispose();
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return Title(
+        title: 'buddy_manage_user_content_admin',
+        color: FlutterFlowTheme.of(context).primary.withAlpha(0XFF),
+        child: GestureDetector(
+          onTap: () {
+            FocusScope.of(context).unfocus();
+            FocusManager.instance.primaryFocus?.unfocus();
+          },
+          child: Scaffold(
+            key: scaffoldKey,
+            backgroundColor: FlutterFlowTheme.of(context).secondaryBackground,
+            endDrawer: Container(
+              width: double.infinity,
+              child: Drawer(
+                elevation: 16,
+                child: Container(
+                  height: double.infinity,
+                  decoration: BoxDecoration(
+                    color: FlutterFlowTheme.of(context).secondaryBackground,
+                  ),
+                  child: Padding(
+                    padding: EdgeInsets.all(12),
+                    child: Column(
+                      mainAxisSize: MainAxisSize.max,
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        Row(
+                          mainAxisSize: MainAxisSize.max,
+                          mainAxisAlignment: MainAxisAlignment.start,
+                          children: [
+                            FlutterFlowIconButton(
+                              borderRadius: 8,
+                              buttonSize: 40,
+                              icon: Icon(
+                                Icons.close,
+                                color: FlutterFlowTheme.of(context).primaryText,
+                                size: 24,
+                              ),
+                              onPressed: () async {
+                                Navigator.pop(context);
+                              },
+                            ),
+                          ],
+                        ),
+                        Flexible(
+                          child: Builder(
+                            builder: (context) {
+                              if (_model.tab == 1) {
+                                return Column(
+                                  mainAxisSize: MainAxisSize.max,
+                                  children: [
+                                    Row(
+                                      mainAxisSize: MainAxisSize.max,
+                                      mainAxisAlignment:
+                                          MainAxisAlignment.spaceBetween,
+                                      children: [
+                                        Column(
+                                          mainAxisSize: MainAxisSize.max,
+                                          crossAxisAlignment:
+                                              CrossAxisAlignment.start,
+                                          children: [
+                                            Text(
+                                              '${widget!.userDoc?.displayName}\'s Lists',
+                                              style:
+                                                  FlutterFlowTheme.of(context)
+                                                      .titleMedium
+                                                      .override(
+                                                        font: GoogleFonts
+                                                            .bricolageGrotesque(
+                                                          fontWeight:
+                                                              FlutterFlowTheme.of(
+                                                                      context)
+                                                                  .titleMedium
+                                                                  .fontWeight,
+                                                          fontStyle:
+                                                              FlutterFlowTheme.of(
+                                                                      context)
+                                                                  .titleMedium
+                                                                  .fontStyle,
+                                                        ),
+                                                        letterSpacing: 0.0,
+                                                        fontWeight:
+                                                            FlutterFlowTheme.of(
+                                                                    context)
+                                                                .titleMedium
+                                                                .fontWeight,
+                                                        fontStyle:
+                                                            FlutterFlowTheme.of(
+                                                                    context)
+                                                                .titleMedium
+                                                                .fontStyle,
+                                                      ),
+                                            ),
+                                          ],
+                                        ),
+                                        FFButtonWidget(
+                                          onPressed: () async {
+                                            await widget!.userDoc!.reference
+                                                .update(createUsersRecordData(
+                                              userLists:
+                                                  createUserDataListsStruct(
+                                                      delete: true),
+                                            ));
+                                            Navigator.pop(context);
+                                          },
+                                          text: 'CLEAR ALL',
+                                          icon: Icon(
+                                            Icons.clear,
+                                            size: 18,
+                                          ),
+                                          options: FFButtonOptions(
+                                            height: 40,
+                                            padding:
+                                                EdgeInsetsDirectional.fromSTEB(
+                                                    10, 6, 10, 6),
+                                            iconAlignment: IconAlignment.end,
+                                            iconPadding:
+                                                EdgeInsetsDirectional.fromSTEB(
+                                                    0, 0, 0, 0),
+                                            color: Colors.transparent,
+                                            textStyle: FlutterFlowTheme.of(
+                                                    context)
+                                                .titleSmall
+                                                .override(
+                                                  font: GoogleFonts.notoSansJp(
+                                                    fontWeight:
+                                                        FlutterFlowTheme.of(
+                                                                context)
+                                                            .titleSmall
+                                                            .fontWeight,
+                                                    fontStyle:
+                                                        FlutterFlowTheme.of(
+                                                                context)
+                                                            .titleSmall
+                                                            .fontStyle,
+                                                  ),
+                                                  color: FlutterFlowTheme.of(
+                                                          context)
+                                                      .error,
+                                                  fontSize: 12,
+                                                  letterSpacing: 0.0,
+                                                  fontWeight:
+                                                      FlutterFlowTheme.of(
+                                                              context)
+                                                          .titleSmall
+                                                          .fontWeight,
+                                                  fontStyle:
+                                                      FlutterFlowTheme.of(
+                                                              context)
+                                                          .titleSmall
+                                                          .fontStyle,
+                                                ),
+                                            elevation: 0,
+                                            borderSide: BorderSide(
+                                              color:
+                                                  FlutterFlowTheme.of(context)
+                                                      .error,
+                                              width: 2,
+                                            ),
+                                            borderRadius:
+                                                BorderRadius.circular(12),
+                                            hoverColor: Color(0xFF3C3C3C),
+                                            hoverBorderSide: BorderSide(
+                                              color:
+                                                  FlutterFlowTheme.of(context)
+                                                      .primaryBackground,
+                                              width: 2,
+                                            ),
+                                            hoverTextColor:
+                                                FlutterFlowTheme.of(context)
+                                                    .primaryBackground,
+                                          ),
+                                        ),
+                                      ],
+                                    ),
+                                    Container(
+                                      width: double.infinity,
+                                      decoration: BoxDecoration(),
+                                      child: Padding(
+                                        padding: EdgeInsetsDirectional.fromSTEB(
+                                            0, 0, 0, 5),
+                                        child: FlutterFlowChoiceChips(
+                                          options: [
+                                            ChipData('Matches'),
+                                            ChipData('Requests Sent'),
+                                            ChipData('Requests Received'),
+                                            ChipData('Reported Users'),
+                                            ChipData('Blocked Users'),
+                                            ChipData('Seen ID\'s')
+                                          ],
+                                          onChanged: (val) async {
+                                            safeSetState(() =>
+                                                _model.choiceChipsValue =
+                                                    val?.firstOrNull);
+                                            _model.selectedList =
+                                                _model.choiceChipsValue;
+                                            safeSetState(() {});
+                                          },
+                                          selectedChipStyle: ChipStyle(
+                                            backgroundColor:
+                                                FlutterFlowTheme.of(context)
+                                                    .primary,
+                                            textStyle: FlutterFlowTheme.of(
+                                                    context)
+                                                .bodyMedium
+                                                .override(
+                                                  font: GoogleFonts.notoSansJp(
+                                                    fontWeight: FontWeight.w500,
+                                                    fontStyle:
+                                                        FlutterFlowTheme.of(
+                                                                context)
+                                                            .bodyMedium
+                                                            .fontStyle,
+                                                  ),
+                                                  color: FlutterFlowTheme.of(
+                                                          context)
+                                                      .primaryBackground,
+                                                  letterSpacing: 0.0,
+                                                  fontWeight: FontWeight.w500,
+                                                  fontStyle:
+                                                      FlutterFlowTheme.of(
+                                                              context)
+                                                          .bodyMedium
+                                                          .fontStyle,
+                                                ),
+                                            iconColor:
+                                                FlutterFlowTheme.of(context)
+                                                    .primaryBackground,
+                                            iconSize: 16,
+                                            elevation: 0,
+                                            borderRadius:
+                                                BorderRadius.circular(8),
+                                          ),
+                                          unselectedChipStyle: ChipStyle(
+                                            backgroundColor:
+                                                FlutterFlowTheme.of(context)
+                                                    .primaryBackground,
+                                            textStyle: FlutterFlowTheme.of(
+                                                    context)
+                                                .bodyMedium
+                                                .override(
+                                                  font: GoogleFonts.notoSansJp(
+                                                    fontWeight:
+                                                        FlutterFlowTheme.of(
+                                                                context)
+                                                            .bodyMedium
+                                                            .fontWeight,
+                                                    fontStyle:
+                                                        FlutterFlowTheme.of(
+                                                                context)
+                                                            .bodyMedium
+                                                            .fontStyle,
+                                                  ),
+                                                  color: FlutterFlowTheme.of(
+                                                          context)
+                                                      .secondaryText,
+                                                  letterSpacing: 0.0,
+                                                  fontWeight:
+                                                      FlutterFlowTheme.of(
+                                                              context)
+                                                          .bodyMedium
+                                                          .fontWeight,
+                                                  fontStyle:
+                                                      FlutterFlowTheme.of(
+                                                              context)
+                                                          .bodyMedium
+                                                          .fontStyle,
+                                                ),
+                                            iconColor:
+                                                FlutterFlowTheme.of(context)
+                                                    .secondaryText,
+                                            iconSize: 16,
+                                            elevation: 0,
+                                            borderRadius:
+                                                BorderRadius.circular(8),
+                                          ),
+                                          chipSpacing: 6,
+                                          rowSpacing: 6,
+                                          multiselect: false,
+                                          initialized:
+                                              _model.choiceChipsValue != null,
+                                          alignment: WrapAlignment.center,
+                                          controller: _model
+                                                  .choiceChipsValueController ??=
+                                              FormFieldController<List<String>>(
+                                            ['Matches'],
+                                          ),
+                                          wrapped: true,
+                                        ),
+                                      ),
+                                    ),
+                                    Builder(
+                                      builder: (context) {
+                                        if (_model.selectedList == 'Matches') {
+                                          return Builder(
+                                            builder: (context) {
+                                              final matchesList = widget!
+                                                      .userDoc
+                                                      ?.userLists
+                                                      ?.customersList
+                                                      ?.toList() ??
+                                                  [];
+
+                                              return Column(
+                                                mainAxisSize: MainAxisSize.max,
+                                                children: List.generate(
+                                                    matchesList.length,
+                                                    (matchesListIndex) {
+                                                  final matchesListItem =
+                                                      matchesList[
+                                                          matchesListIndex];
+                                                  return wrapWithModel(
+                                                    model: _model
+                                                        .providerListItemModels1
+                                                        .getModel(
+                                                      functions
+                                                          .randomKeyGenerator()!,
+                                                      matchesListIndex,
+                                                    ),
+                                                    updateCallback: () =>
+                                                        safeSetState(() {}),
+                                                    child:
+                                                        ProviderListItemWidget(
+                                                      key: Key(
+                                                        'Keyjdt_${functions.randomKeyGenerator()!}',
+                                                      ),
+                                                      userDoc: matchesListItem,
+                                                      deleteAction: () async {
+                                                        await widget!
+                                                            .userDoc!.reference
+                                                            .update(
+                                                                createUsersRecordData(
+                                                          userLists:
+                                                              createUserDataListsStruct(
+                                                            fieldValues: {
+                                                              'customers_list':
+                                                                  FieldValue
+                                                                      .arrayRemove([
+                                                                matchesListItem
+                                                              ]),
+                                                            },
+                                                            clearUnsetFields:
+                                                                false,
+                                                          ),
+                                                        ));
+
+                                                        await matchesListItem
+                                                            .update(
+                                                                createUsersRecordData(
+                                                          userLists:
+                                                              createUserDataListsStruct(
+                                                            fieldValues: {
+                                                              'customers_list':
+                                                                  FieldValue
+                                                                      .arrayRemove([
+                                                                widget!.userDoc
+                                                                    ?.reference
+                                                              ]),
+                                                            },
+                                                            clearUnsetFields:
+                                                                false,
+                                                          ),
+                                                        ));
+                                                        ScaffoldMessenger.of(
+                                                                context)
+                                                            .showSnackBar(
+                                                          SnackBar(
+                                                            content: Text(
+                                                              'User removed from list',
+                                                              style: TextStyle(
+                                                                color: FlutterFlowTheme.of(
+                                                                        context)
+                                                                    .primaryBackground,
+                                                              ),
+                                                            ),
+                                                            duration: Duration(
+                                                                milliseconds:
+                                                                    2500),
+                                                            backgroundColor:
+                                                                FlutterFlowTheme.of(
+                                                                        context)
+                                                                    .secondary,
+                                                          ),
+                                                        );
+                                                      },
+                                                    ),
+                                                  );
+                                                }).divide(SizedBox(height: 5)),
+                                              );
+                                            },
+                                          );
+                                        } else if (_model.selectedList ==
+                                            'Requests Sent') {
+                                          return Builder(
+                                            builder: (context) {
+                                              final requestsSentList = widget!
+                                                      .userDoc
+                                                      ?.userLists
+                                                      ?.requestsSent
+                                                      ?.toList() ??
+                                                  [];
+
+                                              return Column(
+                                                mainAxisSize: MainAxisSize.max,
+                                                children: List.generate(
+                                                    requestsSentList.length,
+                                                    (requestsSentListIndex) {
+                                                  final requestsSentListItem =
+                                                      requestsSentList[
+                                                          requestsSentListIndex];
+                                                  return wrapWithModel(
+                                                    model: _model
+                                                        .providerListItemModels2
+                                                        .getModel(
+                                                      requestsSentListItem.id,
+                                                      requestsSentListIndex,
+                                                    ),
+                                                    updateCallback: () =>
+                                                        safeSetState(() {}),
+                                                    child:
+                                                        ProviderListItemWidget(
+                                                      key: Key(
+                                                        'Keynwy_${requestsSentListItem.id}',
+                                                      ),
+                                                      userDoc:
+                                                          requestsSentListItem,
+                                                      deleteAction: () async {
+                                                        await widget!
+                                                            .userDoc!.reference
+                                                            .update(
+                                                                createUsersRecordData(
+                                                          userLists:
+                                                              createUserDataListsStruct(
+                                                            fieldValues: {
+                                                              'requests_sent':
+                                                                  FieldValue
+                                                                      .arrayRemove([
+                                                                requestsSentListItem
+                                                              ]),
+                                                            },
+                                                            clearUnsetFields:
+                                                                false,
+                                                          ),
+                                                        ));
+
+                                                        await requestsSentListItem
+                                                            .update(
+                                                                createUsersRecordData(
+                                                          userLists:
+                                                              createUserDataListsStruct(
+                                                            fieldValues: {
+                                                              'requests_received':
+                                                                  FieldValue
+                                                                      .arrayRemove([
+                                                                widget!.userDoc
+                                                                    ?.reference
+                                                              ]),
+                                                            },
+                                                            clearUnsetFields:
+                                                                false,
+                                                          ),
+                                                        ));
+                                                        ScaffoldMessenger.of(
+                                                                context)
+                                                            .showSnackBar(
+                                                          SnackBar(
+                                                            content: Text(
+                                                              'User removed from list',
+                                                              style: TextStyle(
+                                                                color: FlutterFlowTheme.of(
+                                                                        context)
+                                                                    .primaryBackground,
+                                                              ),
+                                                            ),
+                                                            duration: Duration(
+                                                                milliseconds:
+                                                                    2500),
+                                                            backgroundColor:
+                                                                FlutterFlowTheme.of(
+                                                                        context)
+                                                                    .secondary,
+                                                          ),
+                                                        );
+                                                      },
+                                                    ),
+                                                  );
+                                                }).divide(SizedBox(height: 5)),
+                                              );
+                                            },
+                                          );
+                                        } else if (_model.selectedList ==
+                                            'Requests Received') {
+                                          return Builder(
+                                            builder: (context) {
+                                              final requestsReceivedList =
+                                                  widget!.userDoc?.userLists
+                                                          ?.requestsReceived
+                                                          ?.toList() ??
+                                                      [];
+
+                                              return Column(
+                                                mainAxisSize: MainAxisSize.max,
+                                                children: List.generate(
+                                                    requestsReceivedList.length,
+                                                    (requestsReceivedListIndex) {
+                                                  final requestsReceivedListItem =
+                                                      requestsReceivedList[
+                                                          requestsReceivedListIndex];
+                                                  return wrapWithModel(
+                                                    model: _model
+                                                        .providerListItemModels3
+                                                        .getModel(
+                                                      requestsReceivedListItem
+                                                          .id,
+                                                      requestsReceivedListIndex,
+                                                    ),
+                                                    updateCallback: () =>
+                                                        safeSetState(() {}),
+                                                    child:
+                                                        ProviderListItemWidget(
+                                                      key: Key(
+                                                        'Keyvzt_${requestsReceivedListItem.id}',
+                                                      ),
+                                                      userDoc:
+                                                          requestsReceivedListItem,
+                                                      deleteAction: () async {
+                                                        await widget!
+                                                            .userDoc!.reference
+                                                            .update(
+                                                                createUsersRecordData(
+                                                          userLists:
+                                                              createUserDataListsStruct(
+                                                            fieldValues: {
+                                                              'requests_received':
+                                                                  FieldValue
+                                                                      .arrayRemove([
+                                                                requestsReceivedListItem
+                                                              ]),
+                                                            },
+                                                            clearUnsetFields:
+                                                                false,
+                                                          ),
+                                                        ));
+
+                                                        await requestsReceivedListItem
+                                                            .update(
+                                                                createUsersRecordData(
+                                                          userLists:
+                                                              createUserDataListsStruct(
+                                                            fieldValues: {
+                                                              'requests_sent':
+                                                                  FieldValue
+                                                                      .arrayRemove([
+                                                                widget!.userDoc
+                                                                    ?.reference
+                                                              ]),
+                                                            },
+                                                            clearUnsetFields:
+                                                                false,
+                                                          ),
+                                                        ));
+                                                        ScaffoldMessenger.of(
+                                                                context)
+                                                            .showSnackBar(
+                                                          SnackBar(
+                                                            content: Text(
+                                                              'User removed from list',
+                                                              style: TextStyle(
+                                                                color: FlutterFlowTheme.of(
+                                                                        context)
+                                                                    .primaryBackground,
+                                                              ),
+                                                            ),
+                                                            duration: Duration(
+                                                                milliseconds:
+                                                                    2500),
+                                                            backgroundColor:
+                                                                FlutterFlowTheme.of(
+                                                                        context)
+                                                                    .secondary,
+                                                          ),
+                                                        );
+                                                      },
+                                                    ),
+                                                  );
+                                                }).divide(SizedBox(height: 5)),
+                                              );
+                                            },
+                                          );
+                                        } else if (_model.selectedList ==
+                                            'Blocked Users') {
+                                          return Builder(
+                                            builder: (context) {
+                                              final blockedUsersList = widget!
+                                                      .userDoc
+                                                      ?.userLists
+                                                      ?.blockedProviders
+                                                      ?.toList() ??
+                                                  [];
+
+                                              return Column(
+                                                mainAxisSize: MainAxisSize.max,
+                                                children: List.generate(
+                                                    blockedUsersList.length,
+                                                    (blockedUsersListIndex) {
+                                                  final blockedUsersListItem =
+                                                      blockedUsersList[
+                                                          blockedUsersListIndex];
+                                                  return StreamBuilder<
+                                                      ProvidersRecord>(
+                                                    stream: ProvidersRecord
+                                                        .getDocument(
+                                                            blockedUsersListItem),
+                                                    builder:
+                                                        (context, snapshot) {
+                                                      // Customize what your widget looks like when it's loading.
+                                                      if (!snapshot.hasData) {
+                                                        return Center(
+                                                          child: SizedBox(
+                                                            width: 60,
+                                                            height: 60,
+                                                            child:
+                                                                SpinKitRipple(
+                                                              color: FlutterFlowTheme
+                                                                      .of(context)
+                                                                  .secondary,
+                                                              size: 60,
+                                                            ),
+                                                          ),
+                                                        );
+                                                      }
+
+                                                      final providerListItemProvidersRecord =
+                                                          snapshot.data!;
+
+                                                      return wrapWithModel(
+                                                        model: _model
+                                                            .providerListItemModels4
+                                                            .getModel(
+                                                          blockedUsersListItem
+                                                              .id,
+                                                          blockedUsersListIndex,
+                                                        ),
+                                                        updateCallback: () =>
+                                                            safeSetState(() {}),
+                                                        child:
+                                                            ProviderListItemWidget(
+                                                          key: Key(
+                                                            'Key4d9_${blockedUsersListItem.id}',
+                                                          ),
+                                                          provDoc:
+                                                              providerListItemProvidersRecord,
+                                                          deleteAction:
+                                                              () async {
+                                                            await widget!
+                                                                .userDoc!
+                                                                .reference
+                                                                .update(
+                                                                    createUsersRecordData(
+                                                              userLists:
+                                                                  createUserDataListsStruct(
+                                                                fieldValues: {
+                                                                  'blocked_providers':
+                                                                      FieldValue
+                                                                          .arrayRemove([
+                                                                    blockedUsersListItem
+                                                                  ]),
+                                                                },
+                                                                clearUnsetFields:
+                                                                    false,
+                                                              ),
+                                                            ));
+                                                            ScaffoldMessenger
+                                                                    .of(context)
+                                                                .showSnackBar(
+                                                              SnackBar(
+                                                                content: Text(
+                                                                  'User removed from list',
+                                                                  style:
+                                                                      TextStyle(
+                                                                    color: FlutterFlowTheme.of(
+                                                                            context)
+                                                                        .primaryBackground,
+                                                                  ),
+                                                                ),
+                                                                duration: Duration(
+                                                                    milliseconds:
+                                                                        2500),
+                                                                backgroundColor:
+                                                                    FlutterFlowTheme.of(
+                                                                            context)
+                                                                        .secondary,
+                                                              ),
+                                                            );
+                                                          },
+                                                        ),
+                                                      );
+                                                    },
+                                                  );
+                                                }).divide(SizedBox(height: 5)),
+                                              );
+                                            },
+                                          );
+                                        } else if (_model.selectedList ==
+                                            'Reported Users') {
+                                          return Builder(
+                                            builder: (context) {
+                                              final reportedUsersList = widget!
+                                                      .userDoc
+                                                      ?.userLists
+                                                      ?.reportedUsers
+                                                      ?.toList() ??
+                                                  [];
+
+                                              return Column(
+                                                mainAxisSize: MainAxisSize.max,
+                                                children: List.generate(
+                                                    reportedUsersList.length,
+                                                    (reportedUsersListIndex) {
+                                                  final reportedUsersListItem =
+                                                      reportedUsersList[
+                                                          reportedUsersListIndex];
+                                                  return wrapWithModel(
+                                                    model: _model
+                                                        .providerListItemModels5
+                                                        .getModel(
+                                                      reportedUsersListItem.id,
+                                                      reportedUsersListIndex,
+                                                    ),
+                                                    updateCallback: () =>
+                                                        safeSetState(() {}),
+                                                    child:
+                                                        ProviderListItemWidget(
+                                                      key: Key(
+                                                        'Keykwu_${reportedUsersListItem.id}',
+                                                      ),
+                                                      userDoc:
+                                                          reportedUsersListItem,
+                                                      deleteAction: () async {
+                                                        await widget!
+                                                            .userDoc!.reference
+                                                            .update(
+                                                                createUsersRecordData(
+                                                          userLists:
+                                                              createUserDataListsStruct(
+                                                            fieldValues: {
+                                                              'reported_users':
+                                                                  FieldValue
+                                                                      .arrayRemove([
+                                                                reportedUsersListItem
+                                                              ]),
+                                                            },
+                                                            clearUnsetFields:
+                                                                false,
+                                                          ),
+                                                        ));
+                                                        ScaffoldMessenger.of(
+                                                                context)
+                                                            .showSnackBar(
+                                                          SnackBar(
+                                                            content: Text(
+                                                              'User removed from list',
+                                                              style: TextStyle(
+                                                                color: FlutterFlowTheme.of(
+                                                                        context)
+                                                                    .primaryBackground,
+                                                              ),
+                                                            ),
+                                                            duration: Duration(
+                                                                milliseconds:
+                                                                    2500),
+                                                            backgroundColor:
+                                                                FlutterFlowTheme.of(
+                                                                        context)
+                                                                    .secondary,
+                                                          ),
+                                                        );
+                                                      },
+                                                    ),
+                                                  );
+                                                }).divide(SizedBox(height: 5)),
+                                              );
+                                            },
+                                          );
+                                        } else if (_model.selectedList ==
+                                            'Seen ID\'s') {
+                                          return Builder(
+                                            builder: (context) {
+                                              final seenUsersList = widget!
+                                                      .userDoc
+                                                      ?.userLists
+                                                      ?.requestIveRejected
+                                                      ?.toList() ??
+                                                  [];
+
+                                              return Column(
+                                                mainAxisSize: MainAxisSize.max,
+                                                children: List.generate(
+                                                    seenUsersList.length,
+                                                    (seenUsersListIndex) {
+                                                  final seenUsersListItem =
+                                                      seenUsersList[
+                                                          seenUsersListIndex];
+                                                  return wrapWithModel(
+                                                    model: _model
+                                                        .providerListItemModels6
+                                                        .getModel(
+                                                      seenUsersListItem.id,
+                                                      seenUsersListIndex,
+                                                    ),
+                                                    updateCallback: () =>
+                                                        safeSetState(() {}),
+                                                    child:
+                                                        ProviderListItemWidget(
+                                                      key: Key(
+                                                        'Keybsw_${seenUsersListItem.id}',
+                                                      ),
+                                                      userDoc:
+                                                          seenUsersListItem,
+                                                      deleteAction: () async {
+                                                        await widget!
+                                                            .userDoc!.reference
+                                                            .update(
+                                                                createUsersRecordData(
+                                                          userLists:
+                                                              createUserDataListsStruct(
+                                                            fieldValues: {
+                                                              'request_ive_rejected':
+                                                                  FieldValue
+                                                                      .arrayRemove([
+                                                                seenUsersListItem
+                                                              ]),
+                                                            },
+                                                            clearUnsetFields:
+                                                                false,
+                                                          ),
+                                                        ));
+                                                        ScaffoldMessenger.of(
+                                                                context)
+                                                            .showSnackBar(
+                                                          SnackBar(
+                                                            content: Text(
+                                                              'User removed from list',
+                                                              style: TextStyle(
+                                                                color: FlutterFlowTheme.of(
+                                                                        context)
+                                                                    .primaryBackground,
+                                                              ),
+                                                            ),
+                                                            duration: Duration(
+                                                                milliseconds:
+                                                                    2500),
+                                                            backgroundColor:
+                                                                FlutterFlowTheme.of(
+                                                                        context)
+                                                                    .secondary,
+                                                          ),
+                                                        );
+                                                      },
+                                                    ),
+                                                  );
+                                                }).divide(SizedBox(height: 5)),
+                                              );
+                                            },
+                                          );
+                                        } else {
+                                          return Container(
+                                            width: double.infinity,
+                                            decoration: BoxDecoration(),
+                                            child: Padding(
+                                              padding: EdgeInsets.all(12),
+                                              child: Column(
+                                                mainAxisSize: MainAxisSize.max,
+                                                children: [
+                                                  Icon(
+                                                    Icons.warning_sharp,
+                                                    color: FlutterFlowTheme.of(
+                                                            context)
+                                                        .warning,
+                                                    size: 75,
+                                                  ),
+                                                  Text(
+                                                    'Select a List',
+                                                    style: FlutterFlowTheme.of(
+                                                            context)
+                                                        .bodyMedium
+                                                        .override(
+                                                          font: GoogleFonts
+                                                              .notoSansJp(
+                                                            fontWeight:
+                                                                FontWeight.w600,
+                                                            fontStyle:
+                                                                FlutterFlowTheme.of(
+                                                                        context)
+                                                                    .bodyMedium
+                                                                    .fontStyle,
+                                                          ),
+                                                          color: FlutterFlowTheme
+                                                                  .of(context)
+                                                              .warning,
+                                                          fontSize: 18,
+                                                          letterSpacing: 0.0,
+                                                          fontWeight:
+                                                              FontWeight.w600,
+                                                          fontStyle:
+                                                              FlutterFlowTheme.of(
+                                                                      context)
+                                                                  .bodyMedium
+                                                                  .fontStyle,
+                                                        ),
+                                                  ),
+                                                ].divide(SizedBox(height: 12)),
+                                              ),
+                                            ),
+                                          );
+                                        }
+                                      },
+                                    ),
+                                  ].divide(SizedBox(height: 12)),
+                                );
+                              } else {
+                                return Container(
+                                  child: wrapWithModel(
+                                    model:
+                                        _model.buddyDeleteUserProfileAdminModel,
+                                    updateCallback: () => safeSetState(() {}),
+                                    child: BuddyDeleteUserProfileAdminWidget(
+                                      userDoc: widget!.userDoc!,
+                                    ),
+                                  ),
+                                );
+                              }
+                            },
+                          ),
+                        ),
+                      ].divide(SizedBox(height: 12)),
+                    ),
+                  ),
+                ),
+              ),
+            ),
+            body: SafeArea(
+              top: true,
+              child: Column(
+                mainAxisSize: MainAxisSize.max,
+                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                children: [
+                  Flexible(
+                    child: Column(
+                      mainAxisSize: MainAxisSize.max,
+                      children: [
+                        wrapWithModel(
+                          model: _model.appBarModel,
+                          updateCallback: () => safeSetState(() {}),
+                          child: AppBarWidget(
+                            backAction: () async {
+                              context.goNamed(
+                                  BuddyAdminManageUserProfileListWidget
+                                      .routeName);
+                            },
+                          ),
+                        ),
+                        Flexible(
+                          child: Container(
+                            width: double.infinity,
+                            decoration: BoxDecoration(
+                              color: FlutterFlowTheme.of(context)
+                                  .secondaryBackground,
+                            ),
+                            child: wrapWithModel(
+                              model: _model.buddyManageUgcAdminModel,
+                              updateCallback: () => safeSetState(() {}),
+                              child: BuddyManageUgcAdminWidget(
+                                userEmail: widget!.userDoc!.email,
+                                userDoc: widget!.userDoc!,
+                                openDrawer: (tab) async {
+                                  _model.tab = tab;
+                                  safeSetState(() {});
+                                  scaffoldKey.currentState!.openEndDrawer();
+                                },
+                              ),
+                            ),
+                          ),
+                        ),
+                      ],
+                    ),
+                  ),
+                  if (responsiveVisibility(
+                    context: context,
+                    desktop: false,
+                  ))
+                    wrapWithModel(
+                      model: _model.providerNavBarModel,
+                      updateCallback: () => safeSetState(() {}),
+                      child: ProviderNavBarWidget(),
+                    ),
+                ],
+              ),
+            ),
+          ),
+        ));
+  }
+}
