@@ -1,0 +1,1788 @@
+import '/auth/firebase_auth/auth_util.dart';
+import '/backend/backend.dart';
+import '/backend/push_notifications/push_notifications_util.dart';
+import '/backend/schema/enums/enums.dart';
+import '/backend/schema/structs/index.dart';
+import '/flutter_flow/flutter_flow_icon_button.dart';
+import '/flutter_flow/flutter_flow_theme.dart';
+import '/flutter_flow/flutter_flow_util.dart';
+import '/flutter_flow/flutter_flow_widgets.dart';
+import '/fynd/components/empty_lists/empty_message_list/empty_message_list_widget.dart';
+import '/fynd/components/lottie_loader/lottie_loader_widget.dart';
+import '/fynd/components/nav_app_bars/app_bar/app_bar_widget.dart';
+import '/fynd/components/nav_app_bars/provider_nav_bar/provider_nav_bar_widget.dart';
+import '/not_in_mvp1/buddy/buddy_new_report_bottom_sheet/buddy_new_report_bottom_sheet_widget.dart';
+import 'dart:ui';
+import '/flutter_flow/custom_functions.dart' as functions;
+import '/index.dart';
+import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:collection/collection.dart';
+import 'package:easy_debounce/easy_debounce.dart';
+import 'package:flutter/material.dart';
+import 'package:flutter/scheduler.dart';
+import 'package:flutter_spinkit/flutter_spinkit.dart';
+import 'package:font_awesome_flutter/font_awesome_flutter.dart';
+import 'package:google_fonts/google_fonts.dart';
+import 'package:provider/provider.dart';
+
+import 'chat_page_model.dart';
+export 'chat_page_model.dart';
+
+class ChatPageWidget extends StatefulWidget {
+  const ChatPageWidget({
+    super.key,
+    required this.chatReference,
+    required this.otherUserRef,
+  });
+
+  final DocumentReference? chatReference;
+  final UsersRecord? otherUserRef;
+
+  static String routeName = 'chat_page';
+  static String routePath = 'chatPage';
+
+  @override
+  State<ChatPageWidget> createState() => _ChatPageWidgetState();
+}
+
+class _ChatPageWidgetState extends State<ChatPageWidget> {
+  late ChatPageModel _model;
+
+  final scaffoldKey = GlobalKey<ScaffoldState>();
+
+  @override
+  void initState() {
+    super.initState();
+    _model = createModel(context, () => ChatPageModel());
+
+    // On page load action.
+    SchedulerBinding.instance.addPostFrameCallback((_) async {
+      // qCurrentChat
+      _model.qCurrentChat = await queryChatsRecordOnce(
+        queryBuilder: (chatsRecord) => chatsRecord.where(Filter.or(
+          Filter(
+            'userARef',
+            isEqualTo: widget!.otherUserRef?.reference,
+          ),
+          Filter(
+            'userBRef',
+            isEqualTo: widget!.otherUserRef?.reference,
+          ),
+          Filter(
+            'pairKey',
+            isEqualTo: widget!.chatReference?.id,
+          ),
+        )),
+        singleRecord: true,
+      ).then((s) => s.firstOrNull);
+      // qCurrentChatMessages
+      _model.messagesCurrentChat = await queryMessagesRecordOnce(
+        parent: widget!.chatReference,
+        queryBuilder: (messagesRecord) =>
+            messagesRecord.orderBy('timestamp', descending: true),
+      );
+      if ((_model.qCurrentChat?.lastMessageDetails?.lastMessageFrom ==
+              widget!.otherUserRef?.reference) &&
+          (_model.qCurrentChat?.lastMessageDetails?.lastMessageStatus ==
+              MessageStatus.unread.name)) {
+        await _model.qCurrentChat!.reference.update({
+          ...createChatsRecordData(
+            lastMessageDetails: createChatMessageDetailsStruct(
+              lastMessageStatus: MessageStatus.read.name,
+              fieldValues: {
+                'last_message_read_timestamp': FieldValue.serverTimestamp(),
+              },
+              clearUnsetFields: false,
+            ),
+          ),
+          ...mapToFirestore(
+            {
+              'lastUpdated': FieldValue.serverTimestamp(),
+            },
+          ),
+        });
+      }
+      // qUnreadMssgs
+      _model.unreadsCurrentChat = await queryMessagesRecordOnce(
+        parent: widget!.chatReference,
+        queryBuilder: (messagesRecord) => messagesRecord
+            .where(
+              'recieverRef',
+              isEqualTo: currentUserReference,
+            )
+            .where(
+              'senderRef',
+              isEqualTo: widget!.otherUserRef?.reference,
+            )
+            .where(
+              'message_status',
+              isEqualTo: MessageStatus.unread.name,
+            ),
+      );
+      for (int loop1Index = 0;
+          loop1Index < _model.unreadsCurrentChat!.length;
+          loop1Index++) {
+        final currentLoop1Item = _model.unreadsCurrentChat![loop1Index];
+
+        await currentLoop1Item.reference.update({
+          ...createMessagesRecordData(
+            messageStatus: MessageStatus.read.name,
+          ),
+          ...mapToFirestore(
+            {
+              'readTimestamp': FieldValue.serverTimestamp(),
+            },
+          ),
+        });
+        _model.addToPvReadMessages(currentLoop1Item.reference);
+        safeSetState(() {});
+        await currentLoop1Item.notificationRef!.delete();
+      }
+    });
+
+    _model.textController ??= TextEditingController();
+    _model.textFieldFocusNode ??= FocusNode();
+
+    WidgetsBinding.instance.addPostFrameCallback((_) => safeSetState(() {}));
+  }
+
+  @override
+  void dispose() {
+    // On page dispose action.
+    () async {
+      await currentUserReference!.update(createUsersRecordData(
+        onlineStatus: createOnlineStatusStruct(
+          isTyping: false,
+          clearUnsetFields: false,
+        ),
+      ));
+    }();
+
+    _model.dispose();
+
+    super.dispose();
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return Title(
+        title: 'chat_page',
+        color: FlutterFlowTheme.of(context).primary.withAlpha(0XFF),
+        child: GestureDetector(
+          onTap: () {
+            FocusScope.of(context).unfocus();
+            FocusManager.instance.primaryFocus?.unfocus();
+          },
+          child: Scaffold(
+            key: scaffoldKey,
+            backgroundColor: FlutterFlowTheme.of(context).primaryBackground,
+            body: SafeArea(
+              top: true,
+              child: Align(
+                alignment: AlignmentDirectional(0, 0),
+                child: Column(
+                  mainAxisSize: MainAxisSize.max,
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: [
+                    wrapWithModel(
+                      model: _model.appBarModel,
+                      updateCallback: () => safeSetState(() {}),
+                      updateOnChange: true,
+                      child: AppBarWidget(
+                        backAction: () async {
+                          if ((currentUserDocument?.role == Roles.customer) &&
+                              (currentUserDocument?.role == Roles.provider)) {
+                            context.goNamed(
+                              InboxWidget.routeName,
+                              queryParameters: {
+                                'activeIndex': serializeParam(
+                                  0,
+                                  ParamType.int,
+                                ),
+                              }.withoutNulls,
+                            );
+                          } else {
+                            context.goNamed(
+                              AdminInboxWidget.routeName,
+                              queryParameters: {
+                                'activeIndex': serializeParam(
+                                  0,
+                                  ParamType.int,
+                                ),
+                              }.withoutNulls,
+                            );
+                          }
+                        },
+                      ),
+                    ),
+                    Expanded(
+                      child: SafeArea(
+                        child: Container(
+                          height: 600,
+                          decoration: BoxDecoration(),
+                          child: Column(
+                            mainAxisSize: MainAxisSize.max,
+                            mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                            children: [
+                              Align(
+                                alignment: AlignmentDirectional(0, 0),
+                                child: Container(
+                                  height: 70,
+                                  decoration: BoxDecoration(
+                                    color: FlutterFlowTheme.of(context)
+                                        .secondaryBackground,
+                                  ),
+                                  child: Padding(
+                                    padding: EdgeInsets.all(12),
+                                    child: Row(
+                                      mainAxisSize: MainAxisSize.max,
+                                      mainAxisAlignment:
+                                          MainAxisAlignment.start,
+                                      children: [
+                                        ClipRRect(
+                                          borderRadius:
+                                              BorderRadius.circular(20),
+                                          child: Image.network(
+                                            valueOrDefault<String>(
+                                              (widget!.otherUserRef?.role ==
+                                                          Roles.admin) &&
+                                                      (widget!.otherUserRef
+                                                              ?.role ==
+                                                          Roles.super_admin)
+                                                  ? 'https://storage.googleapis.com/flutterflow-io-6f20.appspot.com/projects/gym-buddy-umja09/assets/ski1h0wfs0m0/app%20launcher%20icon.png'
+                                                  : widget!
+                                                      .otherUserRef?.photoUrl,
+                                              'https://storage.googleapis.com/flutterflow-io-6f20.appspot.com/projects/gym-buddy-umja09/assets/6gveo6ixqf0h/otheruserprofile.png',
+                                            ),
+                                            width: 50,
+                                            height: 50,
+                                            fit: BoxFit.cover,
+                                            alignment: Alignment(0, -1),
+                                          ),
+                                        ),
+                                        Padding(
+                                          padding:
+                                              EdgeInsetsDirectional.fromSTEB(
+                                                  20, 0, 0, 0),
+                                          child: Column(
+                                            mainAxisSize: MainAxisSize.max,
+                                            mainAxisAlignment:
+                                                MainAxisAlignment.start,
+                                            crossAxisAlignment:
+                                                CrossAxisAlignment.start,
+                                            children: [
+                                              Text(
+                                                valueOrDefault<String>(
+                                                  (widget!.otherUserRef?.role ==
+                                                              Roles.admin) ||
+                                                          (widget!.otherUserRef
+                                                                  ?.role ==
+                                                              Roles.super_admin)
+                                                      ? 'Admin'
+                                                      : valueOrDefault<String>(
+                                                          widget!.otherUserRef
+                                                              ?.displayName,
+                                                          'My Buddy',
+                                                        ),
+                                                  'Buddy',
+                                                ),
+                                                style:
+                                                    FlutterFlowTheme.of(context)
+                                                        .labelLarge
+                                                        .override(
+                                                          font: GoogleFonts
+                                                              .notoSansJp(
+                                                            fontWeight:
+                                                                FlutterFlowTheme.of(
+                                                                        context)
+                                                                    .labelLarge
+                                                                    .fontWeight,
+                                                            fontStyle:
+                                                                FlutterFlowTheme.of(
+                                                                        context)
+                                                                    .labelLarge
+                                                                    .fontStyle,
+                                                          ),
+                                                          letterSpacing: 0.0,
+                                                          fontWeight:
+                                                              FlutterFlowTheme.of(
+                                                                      context)
+                                                                  .labelLarge
+                                                                  .fontWeight,
+                                                          fontStyle:
+                                                              FlutterFlowTheme.of(
+                                                                      context)
+                                                                  .labelLarge
+                                                                  .fontStyle,
+                                                        ),
+                                              ),
+                                              Row(
+                                                mainAxisSize: MainAxisSize.max,
+                                                children: [
+                                                  StreamBuilder<UsersRecord>(
+                                                    stream:
+                                                        UsersRecord.getDocument(
+                                                            widget!
+                                                                .otherUserRef!
+                                                                .reference),
+                                                    builder:
+                                                        (context, snapshot) {
+                                                      // Customize what your widget looks like when it's loading.
+                                                      if (!snapshot.hasData) {
+                                                        return Center(
+                                                          child: SizedBox(
+                                                            width: 60,
+                                                            height: 60,
+                                                            child:
+                                                                SpinKitRipple(
+                                                              color: FlutterFlowTheme
+                                                                      .of(context)
+                                                                  .secondary,
+                                                              size: 60,
+                                                            ),
+                                                          ),
+                                                        );
+                                                      }
+
+                                                      final onlineStatusUsersRecord =
+                                                          snapshot.data!;
+
+                                                      return Container(
+                                                        decoration:
+                                                            BoxDecoration(),
+                                                        child: Visibility(
+                                                          visible: widget!
+                                                                  .otherUserRef
+                                                                  ?.role ==
+                                                              Roles.provider,
+                                                          child: Stack(
+                                                            alignment:
+                                                                AlignmentDirectional(
+                                                                    -1, 0),
+                                                            children: [
+                                                              if (functions.activeLessThan10MinsAgo(
+                                                                      onlineStatusUsersRecord
+                                                                          .onlineStatus
+                                                                          .lastActive!) ==
+                                                                  false)
+                                                                Row(
+                                                                  mainAxisSize:
+                                                                      MainAxisSize
+                                                                          .max,
+                                                                  children: [
+                                                                    Text(
+                                                                      'Offline',
+                                                                      style: FlutterFlowTheme.of(
+                                                                              context)
+                                                                          .bodyMedium
+                                                                          .override(
+                                                                            font:
+                                                                                GoogleFonts.notoSansJp(
+                                                                              fontWeight: FlutterFlowTheme.of(context).bodyMedium.fontWeight,
+                                                                              fontStyle: FontStyle.italic,
+                                                                            ),
+                                                                            letterSpacing:
+                                                                                0.0,
+                                                                            fontWeight:
+                                                                                FlutterFlowTheme.of(context).bodyMedium.fontWeight,
+                                                                            fontStyle:
+                                                                                FontStyle.italic,
+                                                                          ),
+                                                                    ),
+                                                                  ],
+                                                                ),
+                                                              Container(
+                                                                decoration:
+                                                                    BoxDecoration(),
+                                                                child: Stack(
+                                                                  children: [
+                                                                    if ((functions.activeLessThan10MinsAgo(onlineStatusUsersRecord.onlineStatus.lastActive!) ==
+                                                                            true) &&
+                                                                        (onlineStatusUsersRecord.onlineStatus.isTyping ==
+                                                                            false))
+                                                                      Row(
+                                                                        mainAxisSize:
+                                                                            MainAxisSize.max,
+                                                                        children:
+                                                                            [
+                                                                          Container(
+                                                                            width:
+                                                                                10,
+                                                                            height:
+                                                                                10,
+                                                                            decoration:
+                                                                                BoxDecoration(
+                                                                              color: FlutterFlowTheme.of(context).primary,
+                                                                              shape: BoxShape.circle,
+                                                                            ),
+                                                                          ),
+                                                                          Align(
+                                                                            alignment:
+                                                                                AlignmentDirectional(-1, 0),
+                                                                            child:
+                                                                                Text(
+                                                                              'Online',
+                                                                              textAlign: TextAlign.start,
+                                                                              style: FlutterFlowTheme.of(context).labelMedium.override(
+                                                                                    font: GoogleFonts.notoSansJp(
+                                                                                      fontWeight: FontWeight.normal,
+                                                                                      fontStyle: FlutterFlowTheme.of(context).labelMedium.fontStyle,
+                                                                                    ),
+                                                                                    letterSpacing: 0.0,
+                                                                                    fontWeight: FontWeight.normal,
+                                                                                    fontStyle: FlutterFlowTheme.of(context).labelMedium.fontStyle,
+                                                                                  ),
+                                                                            ),
+                                                                          ),
+                                                                        ].divide(SizedBox(width: 5)),
+                                                                      ),
+                                                                    if ((onlineStatusUsersRecord.onlineStatus.isTyping ==
+                                                                            true) &&
+                                                                        (functions.activeLessThan10MinsAgo(onlineStatusUsersRecord.onlineStatus.lastActive!) ==
+                                                                            true))
+                                                                      Row(
+                                                                        mainAxisSize:
+                                                                            MainAxisSize.max,
+                                                                        children:
+                                                                            [
+                                                                          Align(
+                                                                            alignment:
+                                                                                AlignmentDirectional(-1, 0),
+                                                                            child:
+                                                                                Text(
+                                                                              'Typing...',
+                                                                              textAlign: TextAlign.start,
+                                                                              style: FlutterFlowTheme.of(context).labelMedium.override(
+                                                                                    font: GoogleFonts.notoSansJp(
+                                                                                      fontWeight: FontWeight.normal,
+                                                                                      fontStyle: FontStyle.italic,
+                                                                                    ),
+                                                                                    letterSpacing: 0.0,
+                                                                                    fontWeight: FontWeight.normal,
+                                                                                    fontStyle: FontStyle.italic,
+                                                                                  ),
+                                                                            ),
+                                                                          ),
+                                                                        ].divide(SizedBox(width: 5)),
+                                                                      ),
+                                                                  ],
+                                                                ),
+                                                              ),
+                                                            ],
+                                                          ),
+                                                        ),
+                                                      );
+                                                    },
+                                                  ),
+                                                ],
+                                              ),
+                                            ],
+                                          ),
+                                        ),
+                                      ],
+                                    ),
+                                  ),
+                                ),
+                              ),
+                              Flexible(
+                                child: Column(
+                                  mainAxisSize: MainAxisSize.min,
+                                  mainAxisAlignment: MainAxisAlignment.start,
+                                  children: [
+                                    Flexible(
+                                      child: Align(
+                                        alignment: AlignmentDirectional(0, -1),
+                                        child: Padding(
+                                          padding:
+                                              EdgeInsetsDirectional.fromSTEB(
+                                                  0, 10, 0, 10),
+                                          child: Container(
+                                            decoration: BoxDecoration(
+                                              image: DecorationImage(
+                                                fit: BoxFit.cover,
+                                                image: Image.network(
+                                                  '',
+                                                ).image,
+                                              ),
+                                            ),
+                                            child: Padding(
+                                              padding: EdgeInsetsDirectional
+                                                  .fromSTEB(10, 5, 10, 5),
+                                              child: StreamBuilder<
+                                                  List<MessagesRecord>>(
+                                                stream: queryMessagesRecord(
+                                                  parent: widget!.chatReference,
+                                                  queryBuilder:
+                                                      (messagesRecord) =>
+                                                          messagesRecord
+                                                              .orderBy(
+                                                                  'timestamp',
+                                                                  descending:
+                                                                      true),
+                                                )..listen((snapshot) {
+                                                    List<MessagesRecord>
+                                                        messagesMessagesRecordList =
+                                                        snapshot;
+                                                    if (_model.messagesPreviousSnapshot !=
+                                                            null &&
+                                                        !const ListEquality(
+                                                                MessagesRecordDocumentEquality())
+                                                            .equals(
+                                                                messagesMessagesRecordList,
+                                                                _model
+                                                                    .messagesPreviousSnapshot)) {
+                                                      () async {
+                                                        await _model
+                                                            .messagesScrollController
+                                                            ?.animateTo(
+                                                          0,
+                                                          duration: Duration(
+                                                              milliseconds:
+                                                                  100),
+                                                          curve: Curves.ease,
+                                                        );
+
+                                                        safeSetState(() {});
+                                                      }();
+                                                    }
+                                                    _model.messagesPreviousSnapshot =
+                                                        snapshot;
+                                                  }),
+                                                builder: (context, snapshot) {
+                                                  // Customize what your widget looks like when it's loading.
+                                                  if (!snapshot.hasData) {
+                                                    return Center(
+                                                      child:
+                                                          LottieLoaderWidget(),
+                                                    );
+                                                  }
+                                                  List<MessagesRecord>
+                                                      messagesMessagesRecordList =
+                                                      snapshot.data!;
+                                                  if (messagesMessagesRecordList
+                                                      .isEmpty) {
+                                                    return EmptyMessageListWidget();
+                                                  }
+
+                                                  return ListView.separated(
+                                                    padding: EdgeInsets.zero,
+                                                    reverse: true,
+                                                    scrollDirection:
+                                                        Axis.vertical,
+                                                    itemCount:
+                                                        messagesMessagesRecordList
+                                                            .length,
+                                                    separatorBuilder: (_, __) =>
+                                                        SizedBox(height: 10),
+                                                    itemBuilder: (context,
+                                                        messagesIndex) {
+                                                      final messagesMessagesRecord =
+                                                          messagesMessagesRecordList[
+                                                              messagesIndex];
+                                                      return Align(
+                                                        alignment:
+                                                            AlignmentDirectional(
+                                                                valueOrDefault<
+                                                                    double>(
+                                                                  messagesMessagesRecord
+                                                                              .senderRef ==
+                                                                          currentUserReference
+                                                                      ? 1.0
+                                                                      : -1.0,
+                                                                  0.0,
+                                                                ),
+                                                                0),
+                                                        child: Builder(
+                                                          builder: (context) {
+                                                            if (messagesMessagesRecord
+                                                                    .senderRef ==
+                                                                currentUserReference) {
+                                                              return Stack(
+                                                                children: [
+                                                                  if (messagesMessagesRecord
+                                                                          .messageStatus !=
+                                                                      MessageStatus
+                                                                          .deleted
+                                                                          .name)
+                                                                    Align(
+                                                                      alignment:
+                                                                          AlignmentDirectional(
+                                                                              1,
+                                                                              -1),
+                                                                      child:
+                                                                          Container(
+                                                                        decoration:
+                                                                            BoxDecoration(),
+                                                                        alignment: AlignmentDirectional(
+                                                                            1,
+                                                                            -1),
+                                                                        child:
+                                                                            Row(
+                                                                          mainAxisSize:
+                                                                              MainAxisSize.max,
+                                                                          mainAxisAlignment:
+                                                                              MainAxisAlignment.end,
+                                                                          crossAxisAlignment:
+                                                                              CrossAxisAlignment.start,
+                                                                          children: [
+                                                                            Padding(
+                                                                              padding: EdgeInsetsDirectional.fromSTEB(0, 0, 3, 0),
+                                                                              child: Stack(
+                                                                                alignment: AlignmentDirectional(1, 0),
+                                                                                children: [
+                                                                                  Align(
+                                                                                    alignment: AlignmentDirectional(1, -1),
+                                                                                    child: FlutterFlowIconButton(
+                                                                                      borderRadius: 8,
+                                                                                      buttonSize: 40,
+                                                                                      icon: Icon(
+                                                                                        Icons.more_vert,
+                                                                                        color: FlutterFlowTheme.of(context).info,
+                                                                                        size: 24,
+                                                                                      ),
+                                                                                      onPressed: () async {
+                                                                                        _model.expanded = true;
+                                                                                        _model.selectedMessageID = messagesMessagesRecord.messageID;
+                                                                                        safeSetState(() {});
+                                                                                      },
+                                                                                    ),
+                                                                                  ),
+                                                                                  if (_model.expanded && (_model.selectedMessageID == messagesMessagesRecord.messageID))
+                                                                                    Container(
+                                                                                      decoration: BoxDecoration(
+                                                                                        color: FlutterFlowTheme.of(context).secondaryBackground,
+                                                                                        borderRadius: BorderRadius.only(
+                                                                                          topLeft: Radius.circular(12),
+                                                                                          topRight: Radius.circular(12),
+                                                                                          bottomLeft: Radius.circular(12),
+                                                                                          bottomRight: Radius.circular(12),
+                                                                                        ),
+                                                                                      ),
+                                                                                      child: Column(
+                                                                                        mainAxisSize: MainAxisSize.max,
+                                                                                        children: [
+                                                                                          Row(
+                                                                                            mainAxisSize: MainAxisSize.max,
+                                                                                            children: [
+                                                                                              Align(
+                                                                                                alignment: AlignmentDirectional(-1, 0),
+                                                                                                child: Padding(
+                                                                                                  padding: EdgeInsetsDirectional.fromSTEB(6, 0, 6, 0),
+                                                                                                  child: FFButtonWidget(
+                                                                                                    onPressed: () async {
+                                                                                                      await messagesMessagesRecord.reference.update(createMessagesRecordData(
+                                                                                                        text: 'Message deleted',
+                                                                                                        messageStatus: MessageStatus.deleted.name,
+                                                                                                      ));
+                                                                                                      if (messagesMessagesRecord.reference == _model.qCurrentChat?.lastMessageDetails?.lastMessageRef) {
+                                                                                                        await widget!.chatReference!.update({
+                                                                                                          ...createChatsRecordData(
+                                                                                                            lastMessageDetails: createChatMessageDetailsStruct(
+                                                                                                              lastMessage: 'Message deleted',
+                                                                                                              fieldValues: {
+                                                                                                                'last_message_timestamp': FieldValue.serverTimestamp(),
+                                                                                                              },
+                                                                                                              clearUnsetFields: false,
+                                                                                                            ),
+                                                                                                          ),
+                                                                                                          ...mapToFirestore(
+                                                                                                            {
+                                                                                                              'lastUpdated': FieldValue.serverTimestamp(),
+                                                                                                            },
+                                                                                                          ),
+                                                                                                        });
+                                                                                                      }
+                                                                                                      _model.expanded = false;
+                                                                                                      _model.selectedMessageID = null;
+                                                                                                      safeSetState(() {});
+                                                                                                    },
+                                                                                                    text: 'DELETE',
+                                                                                                    options: FFButtonOptions(
+                                                                                                      height: 40,
+                                                                                                      padding: EdgeInsets.all(0),
+                                                                                                      iconPadding: EdgeInsetsDirectional.fromSTEB(0, 0, 0, 0),
+                                                                                                      color: Colors.transparent,
+                                                                                                      textStyle: FlutterFlowTheme.of(context).titleSmall.override(
+                                                                                                            font: GoogleFonts.notoSansJp(
+                                                                                                              fontWeight: FlutterFlowTheme.of(context).titleSmall.fontWeight,
+                                                                                                              fontStyle: FlutterFlowTheme.of(context).titleSmall.fontStyle,
+                                                                                                            ),
+                                                                                                            color: FlutterFlowTheme.of(context).error,
+                                                                                                            fontSize: 14,
+                                                                                                            letterSpacing: 0.0,
+                                                                                                            fontWeight: FlutterFlowTheme.of(context).titleSmall.fontWeight,
+                                                                                                            fontStyle: FlutterFlowTheme.of(context).titleSmall.fontStyle,
+                                                                                                          ),
+                                                                                                      elevation: 0,
+                                                                                                      borderRadius: BorderRadius.circular(12),
+                                                                                                      hoverColor: Color(0xFF3C3C3C),
+                                                                                                      hoverBorderSide: BorderSide(
+                                                                                                        color: FlutterFlowTheme.of(context).primaryBackground,
+                                                                                                      ),
+                                                                                                      hoverTextColor: FlutterFlowTheme.of(context).primaryBackground,
+                                                                                                    ),
+                                                                                                  ),
+                                                                                                ),
+                                                                                              ),
+                                                                                              Align(
+                                                                                                alignment: AlignmentDirectional(1, -1),
+                                                                                                child: FlutterFlowIconButton(
+                                                                                                  borderRadius: 8,
+                                                                                                  buttonSize: 40,
+                                                                                                  icon: Icon(
+                                                                                                    Icons.more_vert,
+                                                                                                    color: FlutterFlowTheme.of(context).primaryText,
+                                                                                                    size: 24,
+                                                                                                  ),
+                                                                                                  onPressed: () async {
+                                                                                                    _model.expanded = false;
+                                                                                                    _model.selectedMessageID = null;
+                                                                                                    safeSetState(() {});
+                                                                                                  },
+                                                                                                ),
+                                                                                              ),
+                                                                                            ],
+                                                                                          ),
+                                                                                        ],
+                                                                                      ),
+                                                                                    ),
+                                                                                ],
+                                                                              ),
+                                                                            ),
+                                                                            Align(
+                                                                              alignment: AlignmentDirectional(1, 0),
+                                                                              child: SafeArea(
+                                                                                child: Container(
+                                                                                  constraints: BoxConstraints(
+                                                                                    minWidth: 30,
+                                                                                    maxWidth: MediaQuery.sizeOf(context).width * 0.6,
+                                                                                  ),
+                                                                                  decoration: BoxDecoration(
+                                                                                    color: FlutterFlowTheme.of(context).secondaryBackground,
+                                                                                    borderRadius: BorderRadius.only(
+                                                                                      topLeft: Radius.circular(8),
+                                                                                      topRight: Radius.circular(8),
+                                                                                      bottomLeft: Radius.circular(8),
+                                                                                    ),
+                                                                                    shape: BoxShape.rectangle,
+                                                                                  ),
+                                                                                  alignment: AlignmentDirectional(-1, 0),
+                                                                                  child: Align(
+                                                                                    alignment: AlignmentDirectional(-1, 0),
+                                                                                    child: Padding(
+                                                                                      padding: EdgeInsets.all(10),
+                                                                                      child: Row(
+                                                                                        mainAxisSize: MainAxisSize.min,
+                                                                                        crossAxisAlignment: CrossAxisAlignment.end,
+                                                                                        children: [
+                                                                                          Expanded(
+                                                                                            child: Column(
+                                                                                              mainAxisSize: MainAxisSize.min,
+                                                                                              crossAxisAlignment: CrossAxisAlignment.start,
+                                                                                              children: [
+                                                                                                Align(
+                                                                                                  alignment: AlignmentDirectional(-1, 0),
+                                                                                                  child: Text(
+                                                                                                    valueOrDefault<String>(
+                                                                                                      messagesMessagesRecord.text,
+                                                                                                      'Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat.',
+                                                                                                    ),
+                                                                                                    style: FlutterFlowTheme.of(context).bodyMedium.override(
+                                                                                                          font: GoogleFonts.notoSansJp(
+                                                                                                            fontWeight: FlutterFlowTheme.of(context).bodyMedium.fontWeight,
+                                                                                                            fontStyle: FlutterFlowTheme.of(context).bodyMedium.fontStyle,
+                                                                                                          ),
+                                                                                                          color: FlutterFlowTheme.of(context).primaryText,
+                                                                                                          letterSpacing: 0.0,
+                                                                                                          fontWeight: FlutterFlowTheme.of(context).bodyMedium.fontWeight,
+                                                                                                          fontStyle: FlutterFlowTheme.of(context).bodyMedium.fontStyle,
+                                                                                                        ),
+                                                                                                  ),
+                                                                                                ),
+                                                                                                Row(
+                                                                                                  mainAxisSize: MainAxisSize.max,
+                                                                                                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                                                                                                  children: [
+                                                                                                    Align(
+                                                                                                      alignment: AlignmentDirectional(-1, 0),
+                                                                                                      child: Text(
+                                                                                                        valueOrDefault<String>(
+                                                                                                          dateTimeFormat("relative", messagesMessagesRecord.timestamp),
+                                                                                                          'a moment ago',
+                                                                                                        ),
+                                                                                                        style: FlutterFlowTheme.of(context).bodyMedium.override(
+                                                                                                              font: GoogleFonts.notoSansJp(
+                                                                                                                fontWeight: FlutterFlowTheme.of(context).bodyMedium.fontWeight,
+                                                                                                                fontStyle: FlutterFlowTheme.of(context).bodyMedium.fontStyle,
+                                                                                                              ),
+                                                                                                              color: FlutterFlowTheme.of(context).primaryText,
+                                                                                                              fontSize: 10,
+                                                                                                              letterSpacing: 0.0,
+                                                                                                              fontWeight: FlutterFlowTheme.of(context).bodyMedium.fontWeight,
+                                                                                                              fontStyle: FlutterFlowTheme.of(context).bodyMedium.fontStyle,
+                                                                                                            ),
+                                                                                                      ),
+                                                                                                    ),
+                                                                                                    Column(
+                                                                                                      mainAxisSize: MainAxisSize.max,
+                                                                                                      mainAxisAlignment: MainAxisAlignment.end,
+                                                                                                      children: [
+                                                                                                        FaIcon(
+                                                                                                          FontAwesomeIcons.checkDouble,
+                                                                                                          color: valueOrDefault<Color>(
+                                                                                                            messagesMessagesRecord.messageStatus == MessageStatus.read.name ? FlutterFlowTheme.of(context).primary : FlutterFlowTheme.of(context).disabledButton1,
+                                                                                                            FlutterFlowTheme.of(context).secondaryBackground,
+                                                                                                          ),
+                                                                                                          size: 20,
+                                                                                                        ),
+                                                                                                        Text(
+                                                                                                          messagesMessagesRecord.messageStatus == MessageStatus.unread.name ? 'sent' : 'read',
+                                                                                                          style: FlutterFlowTheme.of(context).bodySmall.override(
+                                                                                                                font: GoogleFonts.notoSansJp(
+                                                                                                                  fontWeight: FlutterFlowTheme.of(context).bodySmall.fontWeight,
+                                                                                                                  fontStyle: FlutterFlowTheme.of(context).bodySmall.fontStyle,
+                                                                                                                ),
+                                                                                                                color: valueOrDefault<Color>(
+                                                                                                                  messagesMessagesRecord.messageStatus == MessageStatus.read.name ? FlutterFlowTheme.of(context).primary : FlutterFlowTheme.of(context).disabledButton1,
+                                                                                                                  FlutterFlowTheme.of(context).secondaryBackground,
+                                                                                                                ),
+                                                                                                                fontSize: 8,
+                                                                                                                letterSpacing: 0.0,
+                                                                                                                fontWeight: FlutterFlowTheme.of(context).bodySmall.fontWeight,
+                                                                                                                fontStyle: FlutterFlowTheme.of(context).bodySmall.fontStyle,
+                                                                                                              ),
+                                                                                                        ),
+                                                                                                      ],
+                                                                                                    ),
+                                                                                                  ],
+                                                                                                ),
+                                                                                              ].divide(SizedBox(height: 5)),
+                                                                                            ),
+                                                                                          ),
+                                                                                        ].divide(SizedBox(width: 10)),
+                                                                                      ),
+                                                                                    ),
+                                                                                  ),
+                                                                                ),
+                                                                              ),
+                                                                            ),
+                                                                          ],
+                                                                        ),
+                                                                      ),
+                                                                    ),
+                                                                  if (messagesMessagesRecord
+                                                                          .messageStatus ==
+                                                                      MessageStatus
+                                                                          .deleted
+                                                                          .name)
+                                                                    Align(
+                                                                      alignment:
+                                                                          AlignmentDirectional(
+                                                                              1,
+                                                                              0),
+                                                                      child:
+                                                                          SafeArea(
+                                                                        child:
+                                                                            Container(
+                                                                          width:
+                                                                              175,
+                                                                          decoration:
+                                                                              BoxDecoration(
+                                                                            color:
+                                                                                FlutterFlowTheme.of(context).secondaryBackground,
+                                                                            borderRadius:
+                                                                                BorderRadius.circular(8),
+                                                                            shape:
+                                                                                BoxShape.rectangle,
+                                                                          ),
+                                                                          child:
+                                                                              Padding(
+                                                                            padding:
+                                                                                EdgeInsets.all(12),
+                                                                            child:
+                                                                                Row(
+                                                                              mainAxisSize: MainAxisSize.min,
+                                                                              mainAxisAlignment: MainAxisAlignment.center,
+                                                                              children: [
+                                                                                Icon(
+                                                                                  Icons.not_interested,
+                                                                                  color: FlutterFlowTheme.of(context).disabledButton1,
+                                                                                  size: 20,
+                                                                                ),
+                                                                                Flexible(
+                                                                                  child: Text(
+                                                                                    'Message deleted',
+                                                                                    style: FlutterFlowTheme.of(context).bodyMedium.override(
+                                                                                          font: GoogleFonts.notoSansJp(
+                                                                                            fontWeight: FontWeight.w500,
+                                                                                            fontStyle: FontStyle.italic,
+                                                                                          ),
+                                                                                          color: FlutterFlowTheme.of(context).disabledButton1,
+                                                                                          letterSpacing: 0.0,
+                                                                                          fontWeight: FontWeight.w500,
+                                                                                          fontStyle: FontStyle.italic,
+                                                                                        ),
+                                                                                  ),
+                                                                                ),
+                                                                              ].divide(SizedBox(width: 6)),
+                                                                            ),
+                                                                          ),
+                                                                        ),
+                                                                      ),
+                                                                    ),
+                                                                ],
+                                                              );
+                                                            } else {
+                                                              return Stack(
+                                                                children: [
+                                                                  if (messagesMessagesRecord
+                                                                          .messageStatus !=
+                                                                      MessageStatus
+                                                                          .deleted
+                                                                          .name)
+                                                                    Align(
+                                                                      alignment:
+                                                                          AlignmentDirectional(
+                                                                              1,
+                                                                              0),
+                                                                      child:
+                                                                          Container(
+                                                                        decoration:
+                                                                            BoxDecoration(),
+                                                                        alignment: AlignmentDirectional(
+                                                                            -1,
+                                                                            0),
+                                                                        child:
+                                                                            Stack(
+                                                                          alignment: AlignmentDirectional(
+                                                                              -1,
+                                                                              0),
+                                                                          children: [
+                                                                            Row(
+                                                                              mainAxisSize: MainAxisSize.max,
+                                                                              crossAxisAlignment: CrossAxisAlignment.start,
+                                                                              children: [
+                                                                                SafeArea(
+                                                                                  child: Container(
+                                                                                    constraints: BoxConstraints(
+                                                                                      minWidth: 30,
+                                                                                      maxWidth: MediaQuery.sizeOf(context).width * 0.6,
+                                                                                    ),
+                                                                                    decoration: BoxDecoration(
+                                                                                      color: FlutterFlowTheme.of(context).primary,
+                                                                                      borderRadius: BorderRadius.only(
+                                                                                        topLeft: Radius.circular(8),
+                                                                                        topRight: Radius.circular(8),
+                                                                                        bottomRight: Radius.circular(8),
+                                                                                      ),
+                                                                                      shape: BoxShape.rectangle,
+                                                                                    ),
+                                                                                    alignment: AlignmentDirectional(-1, 0),
+                                                                                    child: Align(
+                                                                                      alignment: AlignmentDirectional(-1, 0),
+                                                                                      child: Padding(
+                                                                                        padding: EdgeInsets.all(10),
+                                                                                        child: Row(
+                                                                                          mainAxisSize: MainAxisSize.min,
+                                                                                          crossAxisAlignment: CrossAxisAlignment.end,
+                                                                                          children: [
+                                                                                            Expanded(
+                                                                                              child: Column(
+                                                                                                mainAxisSize: MainAxisSize.max,
+                                                                                                crossAxisAlignment: CrossAxisAlignment.start,
+                                                                                                children: [
+                                                                                                  Align(
+                                                                                                    alignment: AlignmentDirectional(-1, 0),
+                                                                                                    child: Text(
+                                                                                                      valueOrDefault<String>(
+                                                                                                        messagesMessagesRecord.text,
+                                                                                                        'Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat.',
+                                                                                                      ),
+                                                                                                      style: FlutterFlowTheme.of(context).bodyMedium.override(
+                                                                                                            font: GoogleFonts.notoSansJp(
+                                                                                                              fontWeight: FlutterFlowTheme.of(context).bodyMedium.fontWeight,
+                                                                                                              fontStyle: FlutterFlowTheme.of(context).bodyMedium.fontStyle,
+                                                                                                            ),
+                                                                                                            color: FlutterFlowTheme.of(context).secondaryBackground,
+                                                                                                            letterSpacing: 0.0,
+                                                                                                            fontWeight: FlutterFlowTheme.of(context).bodyMedium.fontWeight,
+                                                                                                            fontStyle: FlutterFlowTheme.of(context).bodyMedium.fontStyle,
+                                                                                                          ),
+                                                                                                    ),
+                                                                                                  ),
+                                                                                                  Align(
+                                                                                                    alignment: AlignmentDirectional(-1, 0),
+                                                                                                    child: Text(
+                                                                                                      valueOrDefault<String>(
+                                                                                                        dateTimeFormat("relative", messagesMessagesRecord.timestamp),
+                                                                                                        'a moment ago',
+                                                                                                      ),
+                                                                                                      style: FlutterFlowTheme.of(context).bodyMedium.override(
+                                                                                                            font: GoogleFonts.notoSansJp(
+                                                                                                              fontWeight: FlutterFlowTheme.of(context).bodyMedium.fontWeight,
+                                                                                                              fontStyle: FlutterFlowTheme.of(context).bodyMedium.fontStyle,
+                                                                                                            ),
+                                                                                                            color: FlutterFlowTheme.of(context).secondaryBackground,
+                                                                                                            fontSize: 10,
+                                                                                                            letterSpacing: 0.0,
+                                                                                                            fontWeight: FlutterFlowTheme.of(context).bodyMedium.fontWeight,
+                                                                                                            fontStyle: FlutterFlowTheme.of(context).bodyMedium.fontStyle,
+                                                                                                          ),
+                                                                                                    ),
+                                                                                                  ),
+                                                                                                ].divide(SizedBox(height: 5)),
+                                                                                              ),
+                                                                                            ),
+                                                                                          ].divide(SizedBox(width: 10)),
+                                                                                        ),
+                                                                                      ),
+                                                                                    ),
+                                                                                  ),
+                                                                                ),
+                                                                                if (widget!.otherUserRef?.role == Roles.provider)
+                                                                                  Stack(
+                                                                                    children: [
+                                                                                      Align(
+                                                                                        alignment: AlignmentDirectional(1, -1),
+                                                                                        child: FlutterFlowIconButton(
+                                                                                          borderRadius: 8,
+                                                                                          buttonSize: 40,
+                                                                                          icon: Icon(
+                                                                                            Icons.more_vert,
+                                                                                            color: FlutterFlowTheme.of(context).info,
+                                                                                            size: 24,
+                                                                                          ),
+                                                                                          onPressed: () async {
+                                                                                            _model.expanded = true;
+                                                                                            _model.selectedMessageID = messagesMessagesRecord.messageID;
+                                                                                            safeSetState(() {});
+                                                                                          },
+                                                                                        ),
+                                                                                      ),
+                                                                                      if ((_model.expanded == true) && (_model.selectedMessageID == messagesMessagesRecord.messageID))
+                                                                                        Container(
+                                                                                          decoration: BoxDecoration(
+                                                                                            color: FlutterFlowTheme.of(context).secondaryBackground,
+                                                                                            borderRadius: BorderRadius.only(
+                                                                                              topRight: Radius.circular(12),
+                                                                                              bottomRight: Radius.circular(12),
+                                                                                            ),
+                                                                                          ),
+                                                                                          child: Column(
+                                                                                            mainAxisSize: MainAxisSize.max,
+                                                                                            children: [
+                                                                                              Row(
+                                                                                                mainAxisSize: MainAxisSize.max,
+                                                                                                children: [
+                                                                                                  Align(
+                                                                                                    alignment: AlignmentDirectional(1, -1),
+                                                                                                    child: FlutterFlowIconButton(
+                                                                                                      borderRadius: 8,
+                                                                                                      buttonSize: 40,
+                                                                                                      icon: Icon(
+                                                                                                        Icons.more_vert,
+                                                                                                        color: FlutterFlowTheme.of(context).primaryText,
+                                                                                                        size: 24,
+                                                                                                      ),
+                                                                                                      onPressed: () async {
+                                                                                                        _model.expanded = false;
+                                                                                                        safeSetState(() {});
+                                                                                                      },
+                                                                                                    ),
+                                                                                                  ),
+                                                                                                  Align(
+                                                                                                    alignment: AlignmentDirectional(-1, 0),
+                                                                                                    child: Padding(
+                                                                                                      padding: EdgeInsetsDirectional.fromSTEB(12, 0, 12, 0),
+                                                                                                      child: FFButtonWidget(
+                                                                                                        onPressed: () async {
+                                                                                                          await showModalBottomSheet(
+                                                                                                            isScrollControlled: true,
+                                                                                                            backgroundColor: Colors.transparent,
+                                                                                                            useSafeArea: true,
+                                                                                                            context: context,
+                                                                                                            builder: (context) {
+                                                                                                              return GestureDetector(
+                                                                                                                onTap: () {
+                                                                                                                  FocusScope.of(context).unfocus();
+                                                                                                                  FocusManager.instance.primaryFocus?.unfocus();
+                                                                                                                },
+                                                                                                                child: Padding(
+                                                                                                                  padding: MediaQuery.viewInsetsOf(context),
+                                                                                                                  child: BuddyNewReportBottomSheetWidget(
+                                                                                                                    reportType: 'Message',
+                                                                                                                    contentRefs: ReportedContactRefStruct(
+                                                                                                                      reportedUser: widget!.otherUserRef?.reference,
+                                                                                                                      reportedMessage: messagesMessagesRecord.reference,
+                                                                                                                    ),
+                                                                                                                  ),
+                                                                                                                ),
+                                                                                                              );
+                                                                                                            },
+                                                                                                          ).then((value) => safeSetState(() {}));
+
+                                                                                                          _model.expanded = false;
+                                                                                                          _model.selectedMessageID = null;
+                                                                                                          safeSetState(() {});
+                                                                                                        },
+                                                                                                        text: 'REPORT',
+                                                                                                        options: FFButtonOptions(
+                                                                                                          height: 40,
+                                                                                                          padding: EdgeInsets.all(0),
+                                                                                                          iconPadding: EdgeInsetsDirectional.fromSTEB(0, 0, 0, 0),
+                                                                                                          color: Colors.transparent,
+                                                                                                          textStyle: FlutterFlowTheme.of(context).titleSmall.override(
+                                                                                                                font: GoogleFonts.notoSansJp(
+                                                                                                                  fontWeight: FlutterFlowTheme.of(context).titleSmall.fontWeight,
+                                                                                                                  fontStyle: FlutterFlowTheme.of(context).titleSmall.fontStyle,
+                                                                                                                ),
+                                                                                                                color: FlutterFlowTheme.of(context).error,
+                                                                                                                fontSize: 14,
+                                                                                                                letterSpacing: 0.0,
+                                                                                                                fontWeight: FlutterFlowTheme.of(context).titleSmall.fontWeight,
+                                                                                                                fontStyle: FlutterFlowTheme.of(context).titleSmall.fontStyle,
+                                                                                                              ),
+                                                                                                          elevation: 0,
+                                                                                                          borderRadius: BorderRadius.circular(12),
+                                                                                                          hoverColor: Color(0xFF3C3C3C),
+                                                                                                          hoverBorderSide: BorderSide(
+                                                                                                            color: FlutterFlowTheme.of(context).primaryBackground,
+                                                                                                          ),
+                                                                                                          hoverTextColor: FlutterFlowTheme.of(context).primaryBackground,
+                                                                                                        ),
+                                                                                                      ),
+                                                                                                    ),
+                                                                                                  ),
+                                                                                                ],
+                                                                                              ),
+                                                                                            ],
+                                                                                          ),
+                                                                                        ),
+                                                                                    ],
+                                                                                  ),
+                                                                              ],
+                                                                            ),
+                                                                          ],
+                                                                        ),
+                                                                      ),
+                                                                    ),
+                                                                  if (messagesMessagesRecord
+                                                                          .messageStatus ==
+                                                                      MessageStatus
+                                                                          .deleted
+                                                                          .name)
+                                                                    SafeArea(
+                                                                      child:
+                                                                          Container(
+                                                                        width:
+                                                                            175,
+                                                                        decoration:
+                                                                            BoxDecoration(
+                                                                          color:
+                                                                              FlutterFlowTheme.of(context).disabledButton1,
+                                                                          borderRadius:
+                                                                              BorderRadius.circular(8),
+                                                                          shape:
+                                                                              BoxShape.rectangle,
+                                                                        ),
+                                                                        child:
+                                                                            Padding(
+                                                                          padding:
+                                                                              EdgeInsets.all(12),
+                                                                          child:
+                                                                              Row(
+                                                                            mainAxisSize:
+                                                                                MainAxisSize.max,
+                                                                            mainAxisAlignment:
+                                                                                MainAxisAlignment.start,
+                                                                            children:
+                                                                                [
+                                                                              Icon(
+                                                                                Icons.not_interested,
+                                                                                color: FlutterFlowTheme.of(context).disabledButton2,
+                                                                                size: 20,
+                                                                              ),
+                                                                              Flexible(
+                                                                                child: Text(
+                                                                                  'Message deleted',
+                                                                                  style: FlutterFlowTheme.of(context).bodyMedium.override(
+                                                                                        font: GoogleFonts.notoSansJp(
+                                                                                          fontWeight: FontWeight.w500,
+                                                                                          fontStyle: FontStyle.italic,
+                                                                                        ),
+                                                                                        color: FlutterFlowTheme.of(context).disabledButton2,
+                                                                                        letterSpacing: 0.0,
+                                                                                        fontWeight: FontWeight.w500,
+                                                                                        fontStyle: FontStyle.italic,
+                                                                                      ),
+                                                                                ),
+                                                                              ),
+                                                                            ].divide(SizedBox(width: 6)),
+                                                                          ),
+                                                                        ),
+                                                                      ),
+                                                                    ),
+                                                                ],
+                                                              );
+                                                            }
+                                                          },
+                                                        ),
+                                                      );
+                                                    },
+                                                    controller: _model
+                                                        .messagesScrollController,
+                                                  );
+                                                },
+                                              ),
+                                            ),
+                                          ),
+                                        ),
+                                      ),
+                                    ),
+                                    SafeArea(
+                                      child: Container(
+                                        height: 60,
+                                        decoration: BoxDecoration(),
+                                        child: Padding(
+                                          padding:
+                                              EdgeInsetsDirectional.fromSTEB(
+                                                  20, 10, 20, 10),
+                                          child: Row(
+                                            mainAxisSize: MainAxisSize.max,
+                                            mainAxisAlignment:
+                                                MainAxisAlignment.spaceBetween,
+                                            children: [
+                                              Expanded(
+                                                child: Padding(
+                                                  padding: EdgeInsetsDirectional
+                                                      .fromSTEB(0, 0, 10, 0),
+                                                  child: Form(
+                                                    key: _model.formKey,
+                                                    autovalidateMode:
+                                                        AutovalidateMode
+                                                            .disabled,
+                                                    child: Container(
+                                                      width: 200,
+                                                      child: TextFormField(
+                                                        controller: _model
+                                                            .textController,
+                                                        focusNode: _model
+                                                            .textFieldFocusNode,
+                                                        onChanged: (_) =>
+                                                            EasyDebounce
+                                                                .debounce(
+                                                          '_model.textController',
+                                                          Duration(
+                                                              milliseconds:
+                                                                  2000),
+                                                          () async {
+                                                            if (_model.textController
+                                                                        .text !=
+                                                                    null &&
+                                                                _model.textController
+                                                                        .text !=
+                                                                    '') {
+                                                              await currentUserReference!
+                                                                  .update(
+                                                                      createUsersRecordData(
+                                                                onlineStatus:
+                                                                    createOnlineStatusStruct(
+                                                                  isTyping:
+                                                                      true,
+                                                                  clearUnsetFields:
+                                                                      false,
+                                                                ),
+                                                              ));
+                                                            } else {
+                                                              await currentUserReference!
+                                                                  .update(
+                                                                      createUsersRecordData(
+                                                                onlineStatus:
+                                                                    createOnlineStatusStruct(
+                                                                  isTyping:
+                                                                      false,
+                                                                  clearUnsetFields:
+                                                                      false,
+                                                                ),
+                                                              ));
+                                                            }
+                                                          },
+                                                        ),
+                                                        autofocus: true,
+                                                        obscureText: false,
+                                                        decoration:
+                                                            InputDecoration(
+                                                          isDense: true,
+                                                          labelStyle:
+                                                              FlutterFlowTheme.of(
+                                                                      context)
+                                                                  .labelMedium
+                                                                  .override(
+                                                                    font: GoogleFonts
+                                                                        .notoSansJp(
+                                                                      fontWeight: FlutterFlowTheme.of(
+                                                                              context)
+                                                                          .labelMedium
+                                                                          .fontWeight,
+                                                                      fontStyle: FlutterFlowTheme.of(
+                                                                              context)
+                                                                          .labelMedium
+                                                                          .fontStyle,
+                                                                    ),
+                                                                    letterSpacing:
+                                                                        0.0,
+                                                                    fontWeight: FlutterFlowTheme.of(
+                                                                            context)
+                                                                        .labelMedium
+                                                                        .fontWeight,
+                                                                    fontStyle: FlutterFlowTheme.of(
+                                                                            context)
+                                                                        .labelMedium
+                                                                        .fontStyle,
+                                                                  ),
+                                                          hintStyle:
+                                                              FlutterFlowTheme.of(
+                                                                      context)
+                                                                  .labelMedium
+                                                                  .override(
+                                                                    font: GoogleFonts
+                                                                        .notoSansJp(
+                                                                      fontWeight: FlutterFlowTheme.of(
+                                                                              context)
+                                                                          .labelMedium
+                                                                          .fontWeight,
+                                                                      fontStyle: FlutterFlowTheme.of(
+                                                                              context)
+                                                                          .labelMedium
+                                                                          .fontStyle,
+                                                                    ),
+                                                                    letterSpacing:
+                                                                        0.0,
+                                                                    fontWeight: FlutterFlowTheme.of(
+                                                                            context)
+                                                                        .labelMedium
+                                                                        .fontWeight,
+                                                                    fontStyle: FlutterFlowTheme.of(
+                                                                            context)
+                                                                        .labelMedium
+                                                                        .fontStyle,
+                                                                  ),
+                                                          enabledBorder:
+                                                              OutlineInputBorder(
+                                                            borderSide:
+                                                                BorderSide(
+                                                              color: Color(
+                                                                  0x00000000),
+                                                              width: 1,
+                                                            ),
+                                                            borderRadius:
+                                                                BorderRadius
+                                                                    .circular(
+                                                                        8),
+                                                          ),
+                                                          focusedBorder:
+                                                              OutlineInputBorder(
+                                                            borderSide:
+                                                                BorderSide(
+                                                              color: Color(
+                                                                  0x00000000),
+                                                              width: 1,
+                                                            ),
+                                                            borderRadius:
+                                                                BorderRadius
+                                                                    .circular(
+                                                                        8),
+                                                          ),
+                                                          errorBorder:
+                                                              OutlineInputBorder(
+                                                            borderSide:
+                                                                BorderSide(
+                                                              color: FlutterFlowTheme
+                                                                      .of(context)
+                                                                  .error,
+                                                              width: 1,
+                                                            ),
+                                                            borderRadius:
+                                                                BorderRadius
+                                                                    .circular(
+                                                                        8),
+                                                          ),
+                                                          focusedErrorBorder:
+                                                              OutlineInputBorder(
+                                                            borderSide:
+                                                                BorderSide(
+                                                              color: FlutterFlowTheme
+                                                                      .of(context)
+                                                                  .error,
+                                                              width: 1,
+                                                            ),
+                                                            borderRadius:
+                                                                BorderRadius
+                                                                    .circular(
+                                                                        8),
+                                                          ),
+                                                          filled: true,
+                                                          fillColor: FlutterFlowTheme
+                                                                  .of(context)
+                                                              .secondaryBackground,
+                                                          suffixIcon: _model
+                                                                  .textController!
+                                                                  .text
+                                                                  .isNotEmpty
+                                                              ? InkWell(
+                                                                  onTap:
+                                                                      () async {
+                                                                    _model
+                                                                        .textController
+                                                                        ?.clear();
+                                                                    if (_model.textController.text !=
+                                                                            null &&
+                                                                        _model.textController.text !=
+                                                                            '') {
+                                                                      await currentUserReference!
+                                                                          .update(
+                                                                              createUsersRecordData(
+                                                                        onlineStatus:
+                                                                            createOnlineStatusStruct(
+                                                                          isTyping:
+                                                                              true,
+                                                                          clearUnsetFields:
+                                                                              false,
+                                                                        ),
+                                                                      ));
+                                                                    } else {
+                                                                      await currentUserReference!
+                                                                          .update(
+                                                                              createUsersRecordData(
+                                                                        onlineStatus:
+                                                                            createOnlineStatusStruct(
+                                                                          isTyping:
+                                                                              false,
+                                                                          clearUnsetFields:
+                                                                              false,
+                                                                        ),
+                                                                      ));
+                                                                    }
+
+                                                                    safeSetState(
+                                                                        () {});
+                                                                  },
+                                                                  child: Icon(
+                                                                    Icons.clear,
+                                                                    size: 22,
+                                                                  ),
+                                                                )
+                                                              : null,
+                                                        ),
+                                                        style:
+                                                            FlutterFlowTheme.of(
+                                                                    context)
+                                                                .bodyMedium
+                                                                .override(
+                                                                  font: GoogleFonts
+                                                                      .notoSansJp(
+                                                                    fontWeight: FlutterFlowTheme.of(
+                                                                            context)
+                                                                        .bodyMedium
+                                                                        .fontWeight,
+                                                                    fontStyle: FlutterFlowTheme.of(
+                                                                            context)
+                                                                        .bodyMedium
+                                                                        .fontStyle,
+                                                                  ),
+                                                                  letterSpacing:
+                                                                      0.0,
+                                                                  fontWeight: FlutterFlowTheme.of(
+                                                                          context)
+                                                                      .bodyMedium
+                                                                      .fontWeight,
+                                                                  fontStyle: FlutterFlowTheme.of(
+                                                                          context)
+                                                                      .bodyMedium
+                                                                      .fontStyle,
+                                                                ),
+                                                        cursorColor:
+                                                            FlutterFlowTheme.of(
+                                                                    context)
+                                                                .primaryText,
+                                                        enableInteractiveSelection:
+                                                            true,
+                                                        validator: _model
+                                                            .textControllerValidator
+                                                            .asValidator(
+                                                                context),
+                                                      ),
+                                                    ),
+                                                  ),
+                                                ),
+                                              ),
+                                              Container(
+                                                decoration: BoxDecoration(),
+                                                child: FlutterFlowIconButton(
+                                                  borderRadius: 8,
+                                                  buttonSize: 40,
+                                                  fillColor:
+                                                      FlutterFlowTheme.of(
+                                                              context)
+                                                          .menuButtonsSet1b,
+                                                  icon: Icon(
+                                                    Icons.arrow_forward_sharp,
+                                                    color: FlutterFlowTheme.of(
+                                                            context)
+                                                        .primaryWhite,
+                                                    size: 24,
+                                                  ),
+                                                  onPressed: () async {
+                                                    if (_model.textController
+                                                                .text !=
+                                                            null &&
+                                                        _model.textController
+                                                                .text !=
+                                                            '') {
+                                                      var messagesRecordReference =
+                                                          MessagesRecord
+                                                              .createDoc(widget!
+                                                                  .chatReference!);
+                                                      await messagesRecordReference
+                                                          .set({
+                                                        ...createMessagesRecordData(
+                                                          senderRef:
+                                                              currentUserReference,
+                                                          text: _model
+                                                              .textController
+                                                              .text,
+                                                          recieverRef: widget!
+                                                              .otherUserRef
+                                                              ?.reference,
+                                                          messageID: functions
+                                                              .randomKeyGenerator(),
+                                                          senderDetails:
+                                                              updateUserDetailsStruct(
+                                                            currentUserDocument
+                                                                ?.personalDetails,
+                                                            clearUnsetFields:
+                                                                false,
+                                                            create: true,
+                                                          ),
+                                                          messageStatus:
+                                                              MessageStatus
+                                                                  .unread.name,
+                                                        ),
+                                                        ...mapToFirestore(
+                                                          {
+                                                            'timestamp': FieldValue
+                                                                .serverTimestamp(),
+                                                          },
+                                                        ),
+                                                      });
+                                                      _model.newMessage =
+                                                          MessagesRecord
+                                                              .getDocumentFromData({
+                                                        ...createMessagesRecordData(
+                                                          senderRef:
+                                                              currentUserReference,
+                                                          text: _model
+                                                              .textController
+                                                              .text,
+                                                          recieverRef: widget!
+                                                              .otherUserRef
+                                                              ?.reference,
+                                                          messageID: functions
+                                                              .randomKeyGenerator(),
+                                                          senderDetails:
+                                                              updateUserDetailsStruct(
+                                                            currentUserDocument
+                                                                ?.personalDetails,
+                                                            clearUnsetFields:
+                                                                false,
+                                                            create: true,
+                                                          ),
+                                                          messageStatus:
+                                                              MessageStatus
+                                                                  .unread.name,
+                                                        ),
+                                                        ...mapToFirestore(
+                                                          {
+                                                            'timestamp':
+                                                                DateTime.now(),
+                                                          },
+                                                        ),
+                                                      }, messagesRecordReference);
+                                                      safeSetState(() {
+                                                        _model.textController
+                                                            ?.clear();
+                                                      });
+
+                                                      await widget!
+                                                          .chatReference!
+                                                          .update({
+                                                        ...createChatsRecordData(
+                                                          lastMessageDetails:
+                                                              createChatMessageDetailsStruct(
+                                                            lastMessage: _model
+                                                                .newMessage
+                                                                ?.text,
+                                                            lastMessageFrom:
+                                                                currentUserReference,
+                                                            lastMessageRef:
+                                                                _model
+                                                                    .newMessage
+                                                                    ?.reference,
+                                                            lastMessageStatus:
+                                                                MessageStatus
+                                                                    .unread
+                                                                    .name,
+                                                            fieldValues: {
+                                                              'last_message_timestamp':
+                                                                  FieldValue
+                                                                      .serverTimestamp(),
+                                                            },
+                                                            clearUnsetFields:
+                                                                false,
+                                                          ),
+                                                        ),
+                                                        ...mapToFirestore(
+                                                          {
+                                                            'lastUpdated':
+                                                                FieldValue
+                                                                    .serverTimestamp(),
+                                                          },
+                                                        ),
+                                                      });
+
+                                                      var notificationsRecordReference =
+                                                          NotificationsRecord
+                                                              .createDoc(widget!
+                                                                  .otherUserRef!
+                                                                  .reference);
+                                                      await notificationsRecordReference
+                                                          .set({
+                                                        ...createNotificationsRecordData(
+                                                          message: _model
+                                                              .newMessage?.text,
+                                                          notificationType:
+                                                              NotificationTypes
+                                                                  .message,
+                                                          docReferences:
+                                                              createNotificationReferencesStruct(
+                                                            message: _model
+                                                                .newMessage
+                                                                ?.reference,
+                                                            chat: widget!
+                                                                .chatReference,
+                                                            clearUnsetFields:
+                                                                false,
+                                                            create: true,
+                                                          ),
+                                                          fromUser:
+                                                              currentUserReference,
+                                                        ),
+                                                        ...mapToFirestore(
+                                                          {
+                                                            'time_created':
+                                                                FieldValue
+                                                                    .serverTimestamp(),
+                                                          },
+                                                        ),
+                                                      });
+                                                      _model.newNotification =
+                                                          NotificationsRecord
+                                                              .getDocumentFromData({
+                                                        ...createNotificationsRecordData(
+                                                          message: _model
+                                                              .newMessage?.text,
+                                                          notificationType:
+                                                              NotificationTypes
+                                                                  .message,
+                                                          docReferences:
+                                                              createNotificationReferencesStruct(
+                                                            message: _model
+                                                                .newMessage
+                                                                ?.reference,
+                                                            chat: widget!
+                                                                .chatReference,
+                                                            clearUnsetFields:
+                                                                false,
+                                                            create: true,
+                                                          ),
+                                                          fromUser:
+                                                              currentUserReference,
+                                                        ),
+                                                        ...mapToFirestore(
+                                                          {
+                                                            'time_created':
+                                                                DateTime.now(),
+                                                          },
+                                                        ),
+                                                      }, notificationsRecordReference);
+
+                                                      await _model
+                                                          .newMessage!.reference
+                                                          .update(
+                                                              createMessagesRecordData(
+                                                        notificationRef: _model
+                                                            .newNotification
+                                                            ?.reference,
+                                                      ));
+                                                      // Message
+                                                      triggerPushNotification(
+                                                        notificationTitle:
+                                                            'New Message from: ${currentUserDocument?.personalDetails?.displayName}',
+                                                        notificationText: _model
+                                                            .newMessage!.text,
+                                                        notificationImageUrl:
+                                                            currentUserDocument
+                                                                ?.personalDetails
+                                                                ?.photoUrl,
+                                                        userRefs: [
+                                                          widget!.otherUserRef!
+                                                              .reference
+                                                        ],
+                                                        initialPageName:
+                                                            'Inbox',
+                                                        parameterData: {
+                                                          'activeIndex': 3,
+                                                        },
+                                                      );
+                                                    }
+
+                                                    await currentUserReference!
+                                                        .update(
+                                                            createUsersRecordData(
+                                                      onlineStatus:
+                                                          createOnlineStatusStruct(
+                                                        isTyping: false,
+                                                        clearUnsetFields: false,
+                                                      ),
+                                                    ));
+
+                                                    safeSetState(() {});
+                                                  },
+                                                ),
+                                              ),
+                                            ],
+                                          ),
+                                        ),
+                                      ),
+                                    ),
+                                  ],
+                                ),
+                              ),
+                            ],
+                          ),
+                        ),
+                      ),
+                    ),
+                    wrapWithModel(
+                      model: _model.providerNavBarModel,
+                      updateCallback: () => safeSetState(() {}),
+                      child: ProviderNavBarWidget(),
+                    ),
+                  ],
+                ),
+              ),
+            ),
+          ),
+        ));
+  }
+}
