@@ -1,0 +1,441 @@
+import '/auth/firebase_auth/auth_util.dart';
+import '/flutter_flow/flutter_flow_theme.dart';
+import '/flutter_flow/flutter_flow_util.dart';
+import '/flutter_flow/flutter_flow_widgets.dart';
+import 'dart:ui';
+import '/index.dart';
+import 'package:flutter/material.dart';
+import 'package:flutter_spinkit/flutter_spinkit.dart';
+import 'package:google_fonts/google_fonts.dart';
+import 'package:provider/provider.dart';
+
+import 'verification_model.dart';
+export 'verification_model.dart';
+
+class VerificationWidget extends StatefulWidget {
+  const VerificationWidget({super.key});
+
+  static String routeName = 'verification';
+  static String routePath = 'verification';
+
+  @override
+  State<VerificationWidget> createState() => _VerificationWidgetState();
+}
+
+class _VerificationWidgetState extends State<VerificationWidget> {
+  late VerificationModel _model;
+
+  final scaffoldKey = GlobalKey<ScaffoldState>();
+
+  @override
+  void initState() {
+    super.initState();
+    _model = createModel(context, () => VerificationModel());
+
+    WidgetsBinding.instance.addPostFrameCallback((_) => safeSetState(() {}));
+  }
+
+  @override
+  void dispose() {
+    _model.dispose();
+
+    super.dispose();
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return Title(
+        title: 'verification',
+        color: FlutterFlowTheme.of(context).primary.withAlpha(0XFF),
+        child: GestureDetector(
+          onTap: () {
+            FocusScope.of(context).unfocus();
+            FocusManager.instance.primaryFocus?.unfocus();
+          },
+          child: Scaffold(
+            key: scaffoldKey,
+            backgroundColor: FlutterFlowTheme.of(context).secondaryBackground,
+            body: SafeArea(
+              top: true,
+              child: Align(
+                alignment: AlignmentDirectional(0, 1),
+                child: Padding(
+                  padding: EdgeInsetsDirectional.fromSTEB(12, 24, 12, 0),
+                  child: Material(
+                    color: Colors.transparent,
+                    elevation: 12,
+                    shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(12),
+                    ),
+                    child: Container(
+                      height: double.infinity,
+                      decoration: BoxDecoration(
+                        color: FlutterFlowTheme.of(context).primaryBackground,
+                        borderRadius: BorderRadius.circular(12),
+                      ),
+                      alignment: AlignmentDirectional(0, 1),
+                      child: Padding(
+                        padding: EdgeInsetsDirectional.fromSTEB(20, 0, 20, 0),
+                        child: Column(
+                          mainAxisSize: MainAxisSize.max,
+                          mainAxisAlignment: MainAxisAlignment.center,
+                          children: [
+                            if (!currentUserEmailVerified)
+                              AuthUserStreamWidget(
+                                builder: (context) => Column(
+                                  mainAxisSize: MainAxisSize.min,
+                                  mainAxisAlignment: MainAxisAlignment.center,
+                                  children: [
+                                    Align(
+                                      alignment: AlignmentDirectional(0, 0),
+                                      child: Container(
+                                        width: double.infinity,
+                                        height: 300,
+                                        decoration: BoxDecoration(
+                                          borderRadius:
+                                              BorderRadius.circular(0),
+                                        ),
+                                        alignment: AlignmentDirectional(0, 0),
+                                        child: Align(
+                                          alignment: AlignmentDirectional(0, 0),
+                                          child: Column(
+                                            mainAxisSize: MainAxisSize.min,
+                                            mainAxisAlignment:
+                                                MainAxisAlignment.spaceBetween,
+                                            children: [
+                                              Spacer(),
+                                              Align(
+                                                alignment:
+                                                    AlignmentDirectional(0, 0),
+                                                child: Padding(
+                                                  padding: EdgeInsetsDirectional
+                                                      .fromSTEB(0, 0, 0, 1),
+                                                  child: Container(
+                                                    decoration: BoxDecoration(),
+                                                    child: Align(
+                                                      alignment:
+                                                          AlignmentDirectional(
+                                                              0, 0),
+                                                      child: Padding(
+                                                        padding:
+                                                            EdgeInsetsDirectional
+                                                                .fromSTEB(0, 0,
+                                                                    0, 10),
+                                                        child: Row(
+                                                          mainAxisSize:
+                                                              MainAxisSize.min,
+                                                          mainAxisAlignment:
+                                                              MainAxisAlignment
+                                                                  .start,
+                                                          crossAxisAlignment:
+                                                              CrossAxisAlignment
+                                                                  .center,
+                                                          children: [
+                                                            Icon(
+                                                              Icons.error,
+                                                              color: FlutterFlowTheme
+                                                                      .of(context)
+                                                                  .primaryText,
+                                                              size: 32,
+                                                            ),
+                                                            Expanded(
+                                                              child: Text(
+                                                                'Verification link sent to your email address.',
+                                                                style: FlutterFlowTheme.of(
+                                                                        context)
+                                                                    .titleMedium
+                                                                    .override(
+                                                                      font: GoogleFonts
+                                                                          .bricolageGrotesque(
+                                                                        fontWeight: FlutterFlowTheme.of(context)
+                                                                            .titleMedium
+                                                                            .fontWeight,
+                                                                        fontStyle: FlutterFlowTheme.of(context)
+                                                                            .titleMedium
+                                                                            .fontStyle,
+                                                                      ),
+                                                                      letterSpacing:
+                                                                          0.0,
+                                                                      fontWeight: FlutterFlowTheme.of(
+                                                                              context)
+                                                                          .titleMedium
+                                                                          .fontWeight,
+                                                                      fontStyle: FlutterFlowTheme.of(
+                                                                              context)
+                                                                          .titleMedium
+                                                                          .fontStyle,
+                                                                    ),
+                                                              ),
+                                                            ),
+                                                          ].divide(SizedBox(
+                                                              width: 10)),
+                                                        ),
+                                                      ),
+                                                    ),
+                                                  ),
+                                                ),
+                                              ),
+                                              Expanded(
+                                                child: Align(
+                                                  alignment:
+                                                      AlignmentDirectional(
+                                                          0, 0),
+                                                  child: Container(
+                                                    width: double.infinity,
+                                                    height: 75,
+                                                    decoration: BoxDecoration(),
+                                                    alignment:
+                                                        AlignmentDirectional(
+                                                            0, 0),
+                                                    child: Column(
+                                                      mainAxisSize:
+                                                          MainAxisSize.max,
+                                                      mainAxisAlignment:
+                                                          MainAxisAlignment
+                                                              .center,
+                                                      children: [
+                                                        Row(
+                                                          mainAxisSize:
+                                                              MainAxisSize.max,
+                                                          mainAxisAlignment:
+                                                              MainAxisAlignment
+                                                                  .end,
+                                                          children: [
+                                                            Align(
+                                                              alignment:
+                                                                  AlignmentDirectional(
+                                                                      1, 0),
+                                                              child:
+                                                                  FFButtonWidget(
+                                                                onPressed:
+                                                                    () async {
+                                                                  await authManager
+                                                                      .sendEmailVerification();
+                                                                },
+                                                                text:
+                                                                    'RESEND CODE',
+                                                                options:
+                                                                    FFButtonOptions(
+                                                                  height: 48,
+                                                                  padding:
+                                                                      EdgeInsets
+                                                                          .all(
+                                                                              12),
+                                                                  iconPadding:
+                                                                      EdgeInsetsDirectional
+                                                                          .fromSTEB(
+                                                                              0,
+                                                                              0,
+                                                                              0,
+                                                                              0),
+                                                                  color: FlutterFlowTheme.of(
+                                                                          context)
+                                                                      .menuButtonsSet2a,
+                                                                  textStyle: FlutterFlowTheme.of(
+                                                                          context)
+                                                                      .titleSmall
+                                                                      .override(
+                                                                        font: GoogleFonts
+                                                                            .notoSansJp(
+                                                                          fontWeight: FlutterFlowTheme.of(context)
+                                                                              .titleSmall
+                                                                              .fontWeight,
+                                                                          fontStyle: FlutterFlowTheme.of(context)
+                                                                              .titleSmall
+                                                                              .fontStyle,
+                                                                        ),
+                                                                        color: FlutterFlowTheme.of(context)
+                                                                            .menuButtonsSet2b,
+                                                                        fontSize:
+                                                                            14,
+                                                                        letterSpacing:
+                                                                            0.0,
+                                                                        fontWeight: FlutterFlowTheme.of(context)
+                                                                            .titleSmall
+                                                                            .fontWeight,
+                                                                        fontStyle: FlutterFlowTheme.of(context)
+                                                                            .titleSmall
+                                                                            .fontStyle,
+                                                                      ),
+                                                                  elevation: 6,
+                                                                  borderSide:
+                                                                      BorderSide(
+                                                                    color: FlutterFlowTheme.of(
+                                                                            context)
+                                                                        .menuButtonsSet2b,
+                                                                    width: 1,
+                                                                  ),
+                                                                  borderRadius:
+                                                                      BorderRadius
+                                                                          .circular(
+                                                                              12),
+                                                                  hoverColor: FlutterFlowTheme.of(
+                                                                          context)
+                                                                      .menuButtonsSet2b,
+                                                                  hoverBorderSide:
+                                                                      BorderSide(
+                                                                    color: FlutterFlowTheme.of(
+                                                                            context)
+                                                                        .menuButtonsSet2b,
+                                                                    width: 1,
+                                                                  ),
+                                                                  hoverTextColor:
+                                                                      FlutterFlowTheme.of(
+                                                                              context)
+                                                                          .menuButtonsSet2a,
+                                                                ),
+                                                              ),
+                                                            ),
+                                                            Align(
+                                                              alignment:
+                                                                  AlignmentDirectional(
+                                                                      1, 0),
+                                                              child:
+                                                                  FFButtonWidget(
+                                                                onPressed:
+                                                                    () async {
+                                                                  context.pushNamed(
+                                                                      SignUpSplashPageWidget
+                                                                          .routeName);
+                                                                },
+                                                                text:
+                                                                    'I\'VE VERIFIED',
+                                                                options:
+                                                                    FFButtonOptions(
+                                                                  height: 48,
+                                                                  padding:
+                                                                      EdgeInsets
+                                                                          .all(
+                                                                              14),
+                                                                  iconPadding:
+                                                                      EdgeInsetsDirectional
+                                                                          .fromSTEB(
+                                                                              0,
+                                                                              0,
+                                                                              0,
+                                                                              0),
+                                                                  color: FlutterFlowTheme.of(
+                                                                          context)
+                                                                      .menuButtonsSet1a,
+                                                                  textStyle: FlutterFlowTheme.of(
+                                                                          context)
+                                                                      .titleSmall
+                                                                      .override(
+                                                                        font: GoogleFonts
+                                                                            .notoSansJp(
+                                                                          fontWeight:
+                                                                              FontWeight.w600,
+                                                                          fontStyle: FlutterFlowTheme.of(context)
+                                                                              .titleSmall
+                                                                              .fontStyle,
+                                                                        ),
+                                                                        color: FlutterFlowTheme.of(context)
+                                                                            .menuButtonsSet1b,
+                                                                        fontSize:
+                                                                            14,
+                                                                        letterSpacing:
+                                                                            0.0,
+                                                                        fontWeight:
+                                                                            FontWeight.w600,
+                                                                        fontStyle: FlutterFlowTheme.of(context)
+                                                                            .titleSmall
+                                                                            .fontStyle,
+                                                                      ),
+                                                                  elevation: 6,
+                                                                  borderSide:
+                                                                      BorderSide(
+                                                                    color: FlutterFlowTheme.of(
+                                                                            context)
+                                                                        .menuButtonsSet1b,
+                                                                    width: 1,
+                                                                  ),
+                                                                  borderRadius:
+                                                                      BorderRadius
+                                                                          .circular(
+                                                                              12),
+                                                                  hoverColor: FlutterFlowTheme.of(
+                                                                          context)
+                                                                      .menuButtonsSet1a,
+                                                                  hoverBorderSide:
+                                                                      BorderSide(
+                                                                    color: FlutterFlowTheme.of(
+                                                                            context)
+                                                                        .menuButtonsSet1b,
+                                                                    width: 1,
+                                                                  ),
+                                                                  hoverTextColor:
+                                                                      FlutterFlowTheme.of(
+                                                                              context)
+                                                                          .menuButtonsSet1b,
+                                                                ),
+                                                              ),
+                                                            ),
+                                                          ].divide(SizedBox(
+                                                              width: 5)),
+                                                        ),
+                                                        Expanded(
+                                                          child: Align(
+                                                            alignment:
+                                                                AlignmentDirectional(
+                                                                    1, 0),
+                                                            child: Text(
+                                                              'Can\'t find it? Check your spam.',
+                                                              textAlign:
+                                                                  TextAlign
+                                                                      .start,
+                                                              style: FlutterFlowTheme
+                                                                      .of(context)
+                                                                  .bodySmall
+                                                                  .override(
+                                                                    font: GoogleFonts
+                                                                        .notoSansJp(
+                                                                      fontWeight: FlutterFlowTheme.of(
+                                                                              context)
+                                                                          .bodySmall
+                                                                          .fontWeight,
+                                                                      fontStyle: FlutterFlowTheme.of(
+                                                                              context)
+                                                                          .bodySmall
+                                                                          .fontStyle,
+                                                                    ),
+                                                                    letterSpacing:
+                                                                        0.0,
+                                                                    fontWeight: FlutterFlowTheme.of(
+                                                                            context)
+                                                                        .bodySmall
+                                                                        .fontWeight,
+                                                                    fontStyle: FlutterFlowTheme.of(
+                                                                            context)
+                                                                        .bodySmall
+                                                                        .fontStyle,
+                                                                  ),
+                                                            ),
+                                                          ),
+                                                        ),
+                                                      ].divide(
+                                                          SizedBox(height: 10)),
+                                                    ),
+                                                  ),
+                                                ),
+                                              ),
+                                              Spacer(),
+                                            ].divide(SizedBox(height: 10)),
+                                          ),
+                                        ),
+                                      ),
+                                    ),
+                                  ],
+                                ),
+                              ),
+                          ],
+                        ),
+                      ),
+                    ),
+                  ),
+                ),
+              ),
+            ),
+          ),
+        ));
+  }
+}
