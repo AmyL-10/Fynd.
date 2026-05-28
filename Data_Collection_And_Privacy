@@ -1,0 +1,115 @@
+import '/flutter_flow/flutter_flow_theme.dart';
+import '/flutter_flow/flutter_flow_util.dart';
+import '/flutter_flow/flutter_flow_widgets.dart';
+import '/fynd/components/nav_app_bars/app_bar/app_bar_widget.dart';
+import '/fynd/components/nav_app_bars/provider_nav_bar/provider_nav_bar_widget.dart';
+import '/fynd/legal_policies/data_usage_consent_component/data_usage_consent_component_widget.dart';
+import 'dart:ui';
+import 'package:flutter/material.dart';
+import 'package:flutter_spinkit/flutter_spinkit.dart';
+import 'package:google_fonts/google_fonts.dart';
+import 'package:provider/provider.dart';
+
+import 'data_policy_page_model.dart';
+export 'data_policy_page_model.dart';
+
+class DataPolicyPageWidget extends StatefulWidget {
+  const DataPolicyPageWidget({super.key});
+
+  static String routeName = 'data_policy_page';
+  static String routePath = 'dataPolicyPage';
+
+  @override
+  State<DataPolicyPageWidget> createState() => _DataPolicyPageWidgetState();
+}
+
+class _DataPolicyPageWidgetState extends State<DataPolicyPageWidget> {
+  late DataPolicyPageModel _model;
+
+  final scaffoldKey = GlobalKey<ScaffoldState>();
+
+  @override
+  void initState() {
+    super.initState();
+    _model = createModel(context, () => DataPolicyPageModel());
+
+    WidgetsBinding.instance.addPostFrameCallback((_) => safeSetState(() {}));
+  }
+
+  @override
+  void dispose() {
+    _model.dispose();
+
+    super.dispose();
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return Title(
+        title: 'data_policy_page',
+        color: FlutterFlowTheme.of(context).primary.withAlpha(0XFF),
+        child: GestureDetector(
+          onTap: () {
+            FocusScope.of(context).unfocus();
+            FocusManager.instance.primaryFocus?.unfocus();
+          },
+          child: Scaffold(
+            key: scaffoldKey,
+            backgroundColor: FlutterFlowTheme.of(context).primaryBackground,
+            body: SafeArea(
+              top: true,
+              child: Column(
+                mainAxisSize: MainAxisSize.max,
+                children: [
+                  wrapWithModel(
+                    model: _model.appBarModel,
+                    updateCallback: () => safeSetState(() {}),
+                    child: AppBarWidget(
+                      backAction: () async {},
+                    ),
+                  ),
+                  Flexible(
+                    child: Material(
+                      color: Colors.transparent,
+                      elevation: 2,
+                      child: Container(
+                        width: double.infinity,
+                        decoration: BoxDecoration(
+                          color: FlutterFlowTheme.of(context).primaryBackground,
+                        ),
+                        child: Padding(
+                          padding: EdgeInsets.all(12),
+                          child: SingleChildScrollView(
+                            controller: _model.columnController,
+                            child: Column(
+                              mainAxisSize: MainAxisSize.max,
+                              children: [
+                                wrapWithModel(
+                                  model: _model.dataUsageConsentComponentModel,
+                                  updateCallback: () => safeSetState(() {}),
+                                  child: DataUsageConsentComponentWidget(),
+                                ),
+                              ],
+                            ),
+                          ),
+                        ),
+                      ),
+                    ),
+                  ),
+                  Container(
+                    decoration: BoxDecoration(
+                      color: FlutterFlowTheme.of(context).alternate,
+                    ),
+                    child: wrapWithModel(
+                      model: _model.providerNavBarModel,
+                      updateCallback: () => safeSetState(() {}),
+                      child: ProviderNavBarWidget(),
+                    ),
+                  ),
+                ],
+              ),
+            ),
+          ),
+        ));
+  }
+}
