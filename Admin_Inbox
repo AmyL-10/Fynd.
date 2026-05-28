@@ -1,0 +1,679 @@
+import '/auth/firebase_auth/auth_util.dart';
+import '/backend/backend.dart';
+import '/backend/schema/enums/enums.dart';
+import '/components/lottie_loader_copy_widget.dart';
+import '/flutter_flow/flutter_flow_icon_button.dart';
+import '/flutter_flow/flutter_flow_theme.dart';
+import '/flutter_flow/flutter_flow_util.dart';
+import '/flutter_flow/flutter_flow_widgets.dart';
+import '/fynd/components/empty_lists/empty_list/empty_list_widget.dart';
+import '/fynd/components/nav_app_bars/app_bar/app_bar_widget.dart';
+import '/fynd/components/nav_app_bars/provider_nav_bar/provider_nav_bar_widget.dart';
+import 'dart:ui';
+import '/index.dart';
+import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:collection/collection.dart';
+import 'package:flutter/material.dart';
+import 'package:flutter/scheduler.dart';
+import 'package:flutter_spinkit/flutter_spinkit.dart';
+import 'package:font_awesome_flutter/font_awesome_flutter.dart';
+import 'package:google_fonts/google_fonts.dart';
+import 'package:provider/provider.dart';
+
+import 'admin_inbox_model.dart';
+export 'admin_inbox_model.dart';
+
+class AdminInboxWidget extends StatefulWidget {
+  const AdminInboxWidget({
+    super.key,
+    int? activeIndex,
+  }) : this.activeIndex = activeIndex ?? 3;
+
+  final int activeIndex;
+
+  static String routeName = 'admin_inbox';
+  static String routePath = 'admin_Inbox';
+
+  @override
+  State<AdminInboxWidget> createState() => _AdminInboxWidgetState();
+}
+
+class _AdminInboxWidgetState extends State<AdminInboxWidget> {
+  late AdminInboxModel _model;
+
+  final scaffoldKey = GlobalKey<ScaffoldState>();
+
+  @override
+  void initState() {
+    super.initState();
+    _model = createModel(context, () => AdminInboxModel());
+
+    // On page load action.
+    SchedulerBinding.instance.addPostFrameCallback((_) async {
+      _model.qChats = await queryChatsRecordOnce(
+        queryBuilder: (chatsRecord) => chatsRecord.where(
+          'is_admin_chat',
+          isEqualTo: true,
+        ),
+      );
+    });
+
+    WidgetsBinding.instance.addPostFrameCallback((_) => safeSetState(() {}));
+  }
+
+  @override
+  void dispose() {
+    _model.dispose();
+
+    super.dispose();
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return Title(
+        title: 'admin_inbox',
+        color: FlutterFlowTheme.of(context).primary.withAlpha(0XFF),
+        child: GestureDetector(
+          onTap: () {
+            FocusScope.of(context).unfocus();
+            FocusManager.instance.primaryFocus?.unfocus();
+          },
+          child: Scaffold(
+            key: scaffoldKey,
+            backgroundColor: FlutterFlowTheme.of(context).primaryBackground,
+            body: SafeArea(
+              top: true,
+              child: Align(
+                alignment: AlignmentDirectional(0, 0),
+                child: Column(
+                  mainAxisSize: MainAxisSize.max,
+                  mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                  children: [
+                    wrapWithModel(
+                      model: _model.appBarModel,
+                      updateCallback: () => safeSetState(() {}),
+                      child: AppBarWidget(
+                        backAction: () async {
+                          context.pushNamed(FyndAdminDashboardWidget.routeName);
+                        },
+                      ),
+                    ),
+                    Flexible(
+                      child: Padding(
+                        padding: EdgeInsets.all(12),
+                        child: Column(
+                          mainAxisSize: MainAxisSize.max,
+                          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                          children: [
+                            Flexible(
+                              child: Column(
+                                mainAxisSize: MainAxisSize.max,
+                                mainAxisAlignment: MainAxisAlignment.start,
+                                children: [
+                                  Row(
+                                    mainAxisSize: MainAxisSize.max,
+                                    children: [
+                                      Align(
+                                        alignment: AlignmentDirectional(-1, 0),
+                                        child: Text(
+                                          'Inbox',
+                                          textAlign: TextAlign.start,
+                                          style: FlutterFlowTheme.of(context)
+                                              .labelLarge
+                                              .override(
+                                                font: GoogleFonts.notoSansJp(
+                                                  fontWeight:
+                                                      FlutterFlowTheme.of(
+                                                              context)
+                                                          .labelLarge
+                                                          .fontWeight,
+                                                  fontStyle:
+                                                      FlutterFlowTheme.of(
+                                                              context)
+                                                          .labelLarge
+                                                          .fontStyle,
+                                                ),
+                                                letterSpacing: 0.0,
+                                                fontWeight:
+                                                    FlutterFlowTheme.of(context)
+                                                        .labelLarge
+                                                        .fontWeight,
+                                                fontStyle:
+                                                    FlutterFlowTheme.of(context)
+                                                        .labelLarge
+                                                        .fontStyle,
+                                              ),
+                                        ),
+                                      ),
+                                    ],
+                                  ),
+                                  Flexible(
+                                    child: Container(
+                                      decoration: BoxDecoration(),
+                                      child: SingleChildScrollView(
+                                        primary: false,
+                                        controller: _model
+                                            .matchesScrollablecolumnScrollController,
+                                        child: Column(
+                                          mainAxisSize: MainAxisSize.max,
+                                          mainAxisAlignment:
+                                              MainAxisAlignment.start,
+                                          crossAxisAlignment:
+                                              CrossAxisAlignment.center,
+                                          children: [
+                                            SafeArea(
+                                              child: Container(
+                                                decoration: BoxDecoration(
+                                                  borderRadius:
+                                                      BorderRadius.only(),
+                                                ),
+                                                child: Column(
+                                                  mainAxisSize:
+                                                      MainAxisSize.max,
+                                                  children: [
+                                                    StreamBuilder<
+                                                        List<ChatsRecord>>(
+                                                      stream: queryChatsRecord(
+                                                        queryBuilder:
+                                                            (chatsRecord) =>
+                                                                chatsRecord
+                                                                    .where(
+                                                          'is_admin_chat',
+                                                          isEqualTo: true,
+                                                        ),
+                                                      ),
+                                                      builder:
+                                                          (context, snapshot) {
+                                                        // Customize what your widget looks like when it's loading.
+                                                        if (!snapshot.hasData) {
+                                                          return Center(
+                                                            child:
+                                                                LottieLoaderCopyWidget(),
+                                                          );
+                                                        }
+                                                        List<ChatsRecord>
+                                                            chatsListViewChatsRecordList =
+                                                            snapshot.data!;
+                                                        if (chatsListViewChatsRecordList
+                                                            .isEmpty) {
+                                                          return Center(
+                                                            child:
+                                                                EmptyListWidget(),
+                                                          );
+                                                        }
+
+                                                        return Column(
+                                                          mainAxisSize:
+                                                              MainAxisSize.max,
+                                                          children: List.generate(
+                                                              chatsListViewChatsRecordList
+                                                                  .length,
+                                                              (chatsListViewIndex) {
+                                                            final chatsListViewChatsRecord =
+                                                                chatsListViewChatsRecordList[
+                                                                    chatsListViewIndex];
+                                                            return Align(
+                                                              alignment:
+                                                                  AlignmentDirectional(
+                                                                      -1, 0),
+                                                              child: Container(
+                                                                decoration:
+                                                                    BoxDecoration(
+                                                                  color: FlutterFlowTheme.of(
+                                                                          context)
+                                                                      .secondaryBackground,
+                                                                  borderRadius:
+                                                                      BorderRadius
+                                                                          .circular(
+                                                                              18),
+                                                                ),
+                                                                child: StreamBuilder<
+                                                                    UsersRecord>(
+                                                                  stream: UsersRecord.getDocument(chatsListViewChatsRecord
+                                                                              .userARef ==
+                                                                          currentUserReference
+                                                                      ? chatsListViewChatsRecord
+                                                                          .userBRef!
+                                                                      : chatsListViewChatsRecord
+                                                                          .userARef!),
+                                                                  builder: (context,
+                                                                      snapshot) {
+                                                                    // Customize what your widget looks like when it's loading.
+                                                                    if (!snapshot
+                                                                        .hasData) {
+                                                                      return Center(
+                                                                        child:
+                                                                            SizedBox(
+                                                                          width:
+                                                                              60,
+                                                                          height:
+                                                                              60,
+                                                                          child:
+                                                                              SpinKitRipple(
+                                                                            color:
+                                                                                FlutterFlowTheme.of(context).secondary,
+                                                                            size:
+                                                                                60,
+                                                                          ),
+                                                                        ),
+                                                                      );
+                                                                    }
+
+                                                                    final stackUsersRecord =
+                                                                        snapshot
+                                                                            .data!;
+
+                                                                    return Stack(
+                                                                      children: [
+                                                                        Container(
+                                                                          width:
+                                                                              double.infinity,
+                                                                          decoration:
+                                                                              BoxDecoration(
+                                                                            borderRadius:
+                                                                                BorderRadius.circular(8),
+                                                                          ),
+                                                                          alignment: AlignmentDirectional(
+                                                                              -1,
+                                                                              0),
+                                                                          child:
+                                                                              Align(
+                                                                            alignment:
+                                                                                AlignmentDirectional(0, 0),
+                                                                            child:
+                                                                                Padding(
+                                                                              padding: EdgeInsets.all(12),
+                                                                              child: InkWell(
+                                                                                splashColor: Colors.transparent,
+                                                                                focusColor: Colors.transparent,
+                                                                                hoverColor: Colors.transparent,
+                                                                                highlightColor: Colors.transparent,
+                                                                                onTap: () async {
+                                                                                  context.pushNamed(
+                                                                                    ChatPageWidget.routeName,
+                                                                                    queryParameters: {
+                                                                                      'chatReference': serializeParam(
+                                                                                        chatsListViewChatsRecord.reference,
+                                                                                        ParamType.DocumentReference,
+                                                                                      ),
+                                                                                      'otherUserRef': serializeParam(
+                                                                                        stackUsersRecord,
+                                                                                        ParamType.Document,
+                                                                                      ),
+                                                                                    }.withoutNulls,
+                                                                                    extra: <String, dynamic>{
+                                                                                      'otherUserRef': stackUsersRecord,
+                                                                                    },
+                                                                                  );
+                                                                                },
+                                                                                child: Row(
+                                                                                  mainAxisSize: MainAxisSize.max,
+                                                                                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                                                                                  crossAxisAlignment: CrossAxisAlignment.end,
+                                                                                  children: [
+                                                                                    Flexible(
+                                                                                      child: Align(
+                                                                                        alignment: AlignmentDirectional(0, 0),
+                                                                                        child: Container(
+                                                                                          decoration: BoxDecoration(),
+                                                                                          child: Row(
+                                                                                            mainAxisSize: MainAxisSize.max,
+                                                                                            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                                                                                            children: [
+                                                                                              Flexible(
+                                                                                                child: Padding(
+                                                                                                  padding: EdgeInsetsDirectional.fromSTEB(0, 0, 12, 0),
+                                                                                                  child: Row(
+                                                                                                    mainAxisSize: MainAxisSize.max,
+                                                                                                    children: [
+                                                                                                      ClipRRect(
+                                                                                                        borderRadius: BorderRadius.circular(12),
+                                                                                                        child: Image.network(
+                                                                                                          valueOrDefault<String>(
+                                                                                                            stackUsersRecord.photoUrl,
+                                                                                                            'https://storage.googleapis.com/flutterflow-io-6f20.appspot.com/projects/gym-buddy-umja09/assets/6gveo6ixqf0h/otheruserprofile.png',
+                                                                                                          ),
+                                                                                                          width: 55,
+                                                                                                          height: 55,
+                                                                                                          fit: BoxFit.cover,
+                                                                                                        ),
+                                                                                                      ),
+                                                                                                      Flexible(
+                                                                                                        child: Container(
+                                                                                                          decoration: BoxDecoration(),
+                                                                                                          child: Column(
+                                                                                                            mainAxisSize: MainAxisSize.max,
+                                                                                                            mainAxisAlignment: MainAxisAlignment.center,
+                                                                                                            crossAxisAlignment: CrossAxisAlignment.start,
+                                                                                                            children: [
+                                                                                                              Align(
+                                                                                                                alignment: AlignmentDirectional(-1, 1),
+                                                                                                                child: Text(
+                                                                                                                  valueOrDefault<String>(
+                                                                                                                    stackUsersRecord.displayName,
+                                                                                                                    'Buddy',
+                                                                                                                  ),
+                                                                                                                  style: FlutterFlowTheme.of(context).titleMedium.override(
+                                                                                                                        font: GoogleFonts.bricolageGrotesque(
+                                                                                                                          fontWeight: FlutterFlowTheme.of(context).titleMedium.fontWeight,
+                                                                                                                          fontStyle: FlutterFlowTheme.of(context).titleMedium.fontStyle,
+                                                                                                                        ),
+                                                                                                                        color: FlutterFlowTheme.of(context).primaryText,
+                                                                                                                        letterSpacing: 0.0,
+                                                                                                                        fontWeight: FlutterFlowTheme.of(context).titleMedium.fontWeight,
+                                                                                                                        fontStyle: FlutterFlowTheme.of(context).titleMedium.fontStyle,
+                                                                                                                      ),
+                                                                                                                ),
+                                                                                                              ),
+                                                                                                              if (chatsListViewChatsRecord.lastMessageDetails.lastMessage != null && chatsListViewChatsRecord.lastMessageDetails.lastMessage != '')
+                                                                                                                Container(
+                                                                                                                  decoration: BoxDecoration(),
+                                                                                                                  child: Row(
+                                                                                                                    mainAxisSize: MainAxisSize.min,
+                                                                                                                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                                                                                                                    children: [
+                                                                                                                      if (chatsListViewChatsRecord.lastMessageDetails.lastMessage != null && chatsListViewChatsRecord.lastMessageDetails.lastMessage != '')
+                                                                                                                        Text(
+                                                                                                                          chatsListViewChatsRecord.lastMessageDetails.lastMessage.maybeHandleOverflow(
+                                                                                                                            maxChars: 20,
+                                                                                                                            replacement: '…',
+                                                                                                                          ),
+                                                                                                                          style: FlutterFlowTheme.of(context).bodyMedium.override(
+                                                                                                                                font: GoogleFonts.notoSansJp(
+                                                                                                                                  fontWeight: FlutterFlowTheme.of(context).bodyMedium.fontWeight,
+                                                                                                                                  fontStyle: FlutterFlowTheme.of(context).bodyMedium.fontStyle,
+                                                                                                                                ),
+                                                                                                                                letterSpacing: 0.0,
+                                                                                                                                fontWeight: FlutterFlowTheme.of(context).bodyMedium.fontWeight,
+                                                                                                                                fontStyle: FlutterFlowTheme.of(context).bodyMedium.fontStyle,
+                                                                                                                              ),
+                                                                                                                        ),
+                                                                                                                    ],
+                                                                                                                  ),
+                                                                                                                ),
+                                                                                                            ].divide(SizedBox(height: 5)),
+                                                                                                          ),
+                                                                                                        ),
+                                                                                                      ),
+                                                                                                    ].divide(SizedBox(width: 12)),
+                                                                                                  ),
+                                                                                                ),
+                                                                                              ),
+                                                                                            ].divide(SizedBox(width: 10)),
+                                                                                          ),
+                                                                                        ),
+                                                                                      ),
+                                                                                    ),
+                                                                                    StreamBuilder<List<MessagesRecord>>(
+                                                                                      stream: queryMessagesRecord(
+                                                                                        parent: chatsListViewChatsRecord.reference,
+                                                                                        queryBuilder: (messagesRecord) => messagesRecord
+                                                                                            .where(
+                                                                                              'senderRef',
+                                                                                              isEqualTo: stackUsersRecord.reference,
+                                                                                            )
+                                                                                            .where(
+                                                                                              'message_status',
+                                                                                              isEqualTo: MessageStatus.unread.name,
+                                                                                            )
+                                                                                            .where(
+                                                                                              'recieverRef',
+                                                                                              isEqualTo: currentUserReference,
+                                                                                            ),
+                                                                                      ),
+                                                                                      builder: (context, snapshot) {
+                                                                                        // Customize what your widget looks like when it's loading.
+                                                                                        if (!snapshot.hasData) {
+                                                                                          return Center(
+                                                                                            child: SizedBox(
+                                                                                              width: 60,
+                                                                                              height: 60,
+                                                                                              child: SpinKitRipple(
+                                                                                                color: FlutterFlowTheme.of(context).secondary,
+                                                                                                size: 60,
+                                                                                              ),
+                                                                                            ),
+                                                                                          );
+                                                                                        }
+                                                                                        List<MessagesRecord> containerMessagesRecordList = snapshot.data!;
+
+                                                                                        return Container(
+                                                                                          decoration: BoxDecoration(),
+                                                                                          child: Padding(
+                                                                                            padding: EdgeInsetsDirectional.fromSTEB(0, 0, 6, 0),
+                                                                                            child: Stack(
+                                                                                              alignment: AlignmentDirectional(0, 0),
+                                                                                              children: [
+                                                                                                if (containerMessagesRecordList.length > 0)
+                                                                                                  Container(
+                                                                                                    width: 20,
+                                                                                                    height: 20,
+                                                                                                    decoration: BoxDecoration(
+                                                                                                      color: FlutterFlowTheme.of(context).secondary,
+                                                                                                      shape: BoxShape.circle,
+                                                                                                    ),
+                                                                                                    alignment: AlignmentDirectional(0, 0),
+                                                                                                    child: Text(
+                                                                                                      valueOrDefault<String>(
+                                                                                                        containerMessagesRecordList.length.toString(),
+                                                                                                        '1',
+                                                                                                      ),
+                                                                                                      textAlign: TextAlign.center,
+                                                                                                      style: FlutterFlowTheme.of(context).labelSmall.override(
+                                                                                                            font: GoogleFonts.notoSansJp(
+                                                                                                              fontWeight: FlutterFlowTheme.of(context).labelSmall.fontWeight,
+                                                                                                              fontStyle: FlutterFlowTheme.of(context).labelSmall.fontStyle,
+                                                                                                            ),
+                                                                                                            letterSpacing: 0.0,
+                                                                                                            fontWeight: FlutterFlowTheme.of(context).labelSmall.fontWeight,
+                                                                                                            fontStyle: FlutterFlowTheme.of(context).labelSmall.fontStyle,
+                                                                                                          ),
+                                                                                                    ),
+                                                                                                  ),
+                                                                                                if ((chatsListViewChatsRecord.lastMessageDetails.lastMessageFrom == currentUserReference) && (chatsListViewChatsRecord.lastMessageDetails.lastMessage != null && chatsListViewChatsRecord.lastMessageDetails.lastMessage != ''))
+                                                                                                  Align(
+                                                                                                    alignment: AlignmentDirectional(1, 0),
+                                                                                                    child: Column(
+                                                                                                      mainAxisSize: MainAxisSize.max,
+                                                                                                      mainAxisAlignment: MainAxisAlignment.center,
+                                                                                                      children: [
+                                                                                                        Align(
+                                                                                                          alignment: AlignmentDirectional(0, 0),
+                                                                                                          child: FaIcon(
+                                                                                                            FontAwesomeIcons.checkDouble,
+                                                                                                            color: chatsListViewChatsRecord.lastMessageDetails.lastMessageStatus == MessageStatus.unread.name ? FlutterFlowTheme.of(context).alternate : FlutterFlowTheme.of(context).primary,
+                                                                                                            size: 14,
+                                                                                                          ),
+                                                                                                        ),
+                                                                                                        Align(
+                                                                                                          alignment: AlignmentDirectional(0, 0),
+                                                                                                          child: Padding(
+                                                                                                            padding: EdgeInsetsDirectional.fromSTEB(0, 0, 0, 2),
+                                                                                                            child: Text(
+                                                                                                              chatsListViewChatsRecord.lastMessageDetails.lastMessageStatus == MessageStatus.unread.name
+                                                                                                                  ? 'sent'
+                                                                                                                  : 'read'.maybeHandleOverflow(
+                                                                                                                      maxChars: 25,
+                                                                                                                      replacement: '…',
+                                                                                                                    ),
+                                                                                                              style: FlutterFlowTheme.of(context).bodyMedium.override(
+                                                                                                                    font: GoogleFonts.notoSansJp(
+                                                                                                                      fontWeight: FlutterFlowTheme.of(context).bodyMedium.fontWeight,
+                                                                                                                      fontStyle: FlutterFlowTheme.of(context).bodyMedium.fontStyle,
+                                                                                                                    ),
+                                                                                                                    color: chatsListViewChatsRecord.lastMessageDetails.lastMessageStatus == MessageStatus.unread.name ? FlutterFlowTheme.of(context).alternate : FlutterFlowTheme.of(context).primary,
+                                                                                                                    fontSize: 12,
+                                                                                                                    letterSpacing: 0.0,
+                                                                                                                    fontWeight: FlutterFlowTheme.of(context).bodyMedium.fontWeight,
+                                                                                                                    fontStyle: FlutterFlowTheme.of(context).bodyMedium.fontStyle,
+                                                                                                                  ),
+                                                                                                            ),
+                                                                                                          ),
+                                                                                                        ),
+                                                                                                      ].divide(SizedBox(height: 2)),
+                                                                                                    ),
+                                                                                                  ),
+                                                                                              ],
+                                                                                            ),
+                                                                                          ),
+                                                                                        );
+                                                                                      },
+                                                                                    ),
+                                                                                  ],
+                                                                                ),
+                                                                              ),
+                                                                            ),
+                                                                          ),
+                                                                        ),
+                                                                        Stack(
+                                                                          alignment: AlignmentDirectional(
+                                                                              1,
+                                                                              -1),
+                                                                          children: [
+                                                                            Align(
+                                                                              alignment: AlignmentDirectional(1, -1),
+                                                                              child: Padding(
+                                                                                padding: EdgeInsetsDirectional.fromSTEB(0, 0, 12, 0),
+                                                                                child: FlutterFlowIconButton(
+                                                                                  borderRadius: 8,
+                                                                                  buttonSize: 40,
+                                                                                  icon: Icon(
+                                                                                    Icons.keyboard_control,
+                                                                                    color: FlutterFlowTheme.of(context).primaryText,
+                                                                                    size: 24,
+                                                                                  ),
+                                                                                  onPressed: () async {
+                                                                                    _model.expanded = true;
+                                                                                    _model.chatID = chatsListViewChatsRecord.pairKey;
+                                                                                    safeSetState(() {});
+                                                                                  },
+                                                                                ),
+                                                                              ),
+                                                                            ),
+                                                                            Container(
+                                                                              decoration: BoxDecoration(
+                                                                                color: FlutterFlowTheme.of(context).disabledButton2,
+                                                                                borderRadius: BorderRadius.circular(12),
+                                                                              ),
+                                                                              child: Visibility(
+                                                                                visible: (_model.expanded == true) && (_model.chatID == chatsListViewChatsRecord.pairKey),
+                                                                                child: Row(
+                                                                                  mainAxisSize: MainAxisSize.min,
+                                                                                  mainAxisAlignment: MainAxisAlignment.end,
+                                                                                  children: [
+                                                                                    FFButtonWidget(
+                                                                                      onPressed: () async {
+                                                                                        if (chatsListViewChatsRecord.lastMessageDetails.lastMessageFrom == currentUserReference) {
+                                                                                          _model.qNotifications = await queryNotificationsRecordOnce(
+                                                                                            parent: stackUsersRecord.reference,
+                                                                                            queryBuilder: (notificationsRecord) => notificationsRecord
+                                                                                                .where(
+                                                                                                  'doc_references.chat',
+                                                                                                  isEqualTo: chatsListViewChatsRecord.reference,
+                                                                                                )
+                                                                                                .where(
+                                                                                                  'notification_type',
+                                                                                                  isEqualTo: NotificationTypes.message.serialize(),
+                                                                                                ),
+                                                                                          );
+                                                                                          for (int loop1Index = 0; loop1Index < _model.qNotifications!.length; loop1Index++) {
+                                                                                            final currentLoop1Item = _model.qNotifications![loop1Index];
+                                                                                            await currentLoop1Item.reference.delete();
+                                                                                          }
+                                                                                        }
+                                                                                        await chatsListViewChatsRecord.reference.delete();
+                                                                                        _model.expanded = false;
+                                                                                        _model.chatID = null;
+                                                                                        safeSetState(() {});
+
+                                                                                        safeSetState(() {});
+                                                                                      },
+                                                                                      text: 'DELETE CHAT',
+                                                                                      options: FFButtonOptions(
+                                                                                        height: 40,
+                                                                                        padding: EdgeInsets.all(6),
+                                                                                        iconPadding: EdgeInsetsDirectional.fromSTEB(0, 0, 0, 0),
+                                                                                        color: Colors.transparent,
+                                                                                        textStyle: FlutterFlowTheme.of(context).titleSmall.override(
+                                                                                              font: GoogleFonts.notoSansJp(
+                                                                                                fontWeight: FlutterFlowTheme.of(context).titleSmall.fontWeight,
+                                                                                                fontStyle: FlutterFlowTheme.of(context).titleSmall.fontStyle,
+                                                                                              ),
+                                                                                              color: FlutterFlowTheme.of(context).menuButtonsSet1a,
+                                                                                              fontSize: 14,
+                                                                                              letterSpacing: 0.0,
+                                                                                              fontWeight: FlutterFlowTheme.of(context).titleSmall.fontWeight,
+                                                                                              fontStyle: FlutterFlowTheme.of(context).titleSmall.fontStyle,
+                                                                                            ),
+                                                                                        elevation: 0,
+                                                                                        borderRadius: BorderRadius.circular(12),
+                                                                                      ),
+                                                                                    ),
+                                                                                    Align(
+                                                                                      alignment: AlignmentDirectional(1, -1),
+                                                                                      child: Padding(
+                                                                                        padding: EdgeInsetsDirectional.fromSTEB(0, 0, 12, 0),
+                                                                                        child: FlutterFlowIconButton(
+                                                                                          borderRadius: 8,
+                                                                                          buttonSize: 40,
+                                                                                          icon: Icon(
+                                                                                            Icons.keyboard_control,
+                                                                                            color: FlutterFlowTheme.of(context).info,
+                                                                                            size: 24,
+                                                                                          ),
+                                                                                          onPressed: () async {
+                                                                                            _model.expanded = false;
+                                                                                            _model.chatID = null;
+                                                                                            safeSetState(() {});
+                                                                                          },
+                                                                                        ),
+                                                                                      ),
+                                                                                    ),
+                                                                                  ],
+                                                                                ),
+                                                                              ),
+                                                                            ),
+                                                                          ],
+                                                                        ),
+                                                                      ],
+                                                                    );
+                                                                  },
+                                                                ),
+                                                              ),
+                                                            );
+                                                          }).divide(SizedBox(
+                                                              height: 6)),
+                                                        );
+                                                      },
+                                                    ),
+                                                  ],
+                                                ),
+                                              ),
+                                            ),
+                                          ],
+                                        ),
+                                      ),
+                                    ),
+                                  ),
+                                ].divide(SizedBox(height: 12)),
+                              ),
+                            ),
+                          ].divide(SizedBox(height: 10)),
+                        ),
+                      ),
+                    ),
+                    wrapWithModel(
+                      model: _model.providerNavBarModel,
+                      updateCallback: () => safeSetState(() {}),
+                      child: ProviderNavBarWidget(
+                        activeIndex: 3,
+                      ),
+                    ),
+                  ],
+                ),
+              ),
+            ),
+          ),
+        ));
+  }
+}
