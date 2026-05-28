@@ -1,0 +1,152 @@
+import '/flutter_flow/flutter_flow_theme.dart';
+import '/flutter_flow/flutter_flow_util.dart';
+import '/flutter_flow/flutter_flow_widgets.dart';
+import '/fynd/components/nav_app_bars/app_bar/app_bar_widget.dart';
+import '/fynd/components/nav_app_bars/provider_nav_bar/provider_nav_bar_widget.dart';
+import 'dart:ui';
+import '/index.dart';
+import 'package:flutter/material.dart';
+import 'package:flutter_spinkit/flutter_spinkit.dart';
+import 'package:google_fonts/google_fonts.dart';
+import 'package:provider/provider.dart';
+
+import 'fynd_about_us_model.dart';
+export 'fynd_about_us_model.dart';
+
+class FyndAboutUsWidget extends StatefulWidget {
+  const FyndAboutUsWidget({super.key});
+
+  static String routeName = 'fynd_about_us';
+  static String routePath = 'fyndAboutUs';
+
+  @override
+  State<FyndAboutUsWidget> createState() => _FyndAboutUsWidgetState();
+}
+
+class _FyndAboutUsWidgetState extends State<FyndAboutUsWidget> {
+  late FyndAboutUsModel _model;
+
+  final scaffoldKey = GlobalKey<ScaffoldState>();
+
+  @override
+  void initState() {
+    super.initState();
+    _model = createModel(context, () => FyndAboutUsModel());
+
+    WidgetsBinding.instance.addPostFrameCallback((_) => safeSetState(() {}));
+  }
+
+  @override
+  void dispose() {
+    _model.dispose();
+
+    super.dispose();
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return Title(
+        title: 'fynd_about_us',
+        color: FlutterFlowTheme.of(context).primary.withAlpha(0XFF),
+        child: GestureDetector(
+          onTap: () {
+            FocusScope.of(context).unfocus();
+            FocusManager.instance.primaryFocus?.unfocus();
+          },
+          child: Scaffold(
+            key: scaffoldKey,
+            backgroundColor: FlutterFlowTheme.of(context).primaryBackground,
+            body: SafeArea(
+              top: true,
+              child: Column(
+                mainAxisSize: MainAxisSize.max,
+                children: [
+                  wrapWithModel(
+                    model: _model.appBarModel,
+                    updateCallback: () => safeSetState(() {}),
+                    child: AppBarWidget(
+                      backAction: () async {
+                        context.goNamed(
+                            ProviderProfileHelpSupportWidget.routeName);
+                      },
+                    ),
+                  ),
+                  Flexible(
+                    child: Padding(
+                      padding: EdgeInsets.all(12),
+                      child: Column(
+                        mainAxisSize: MainAxisSize.max,
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          Text(
+                            'About Us',
+                            style: FlutterFlowTheme.of(context)
+                                .headlineSmall
+                                .override(
+                                  font: GoogleFonts.bricolageGrotesque(
+                                    fontWeight: FlutterFlowTheme.of(context)
+                                        .headlineSmall
+                                        .fontWeight,
+                                    fontStyle: FlutterFlowTheme.of(context)
+                                        .headlineSmall
+                                        .fontStyle,
+                                  ),
+                                  letterSpacing: 0.0,
+                                  fontWeight: FlutterFlowTheme.of(context)
+                                      .headlineSmall
+                                      .fontWeight,
+                                  fontStyle: FlutterFlowTheme.of(context)
+                                      .headlineSmall
+                                      .fontStyle,
+                                ),
+                          ),
+                          Divider(
+                            thickness: 2,
+                            color:
+                                FlutterFlowTheme.of(context).menuButtonsSet1b,
+                          ),
+                          Padding(
+                            padding:
+                                EdgeInsetsDirectional.fromSTEB(0, 20, 0, 0),
+                            child: Text(
+                              'South Africa is full of local talent and home-made products that don\'t always make it onto a website, a billboard, or a fancy storefront. There’s the gardener who knows every tree on your street by name, the home baker whose cakes carry family stories, and the handyman who never leaves a job half‑done. They are nearby, hardworking, and proud - but too often invisible online. \n\nAt the same time, buyers are navigating a tough economy: costs are rising, trust is fragile, and time is scarce. People want local, affordable, reliable and efficient help - without scrolling through scam‑prone groups or guessing who to trust. \n\nFynd brings these two sides together. It’s a neighbourhood layer for the digital age: a place where buyers can find someone nearby they can trust, and where micro businesses can build a public reputation that opens doors. Technology is just the start - this is about dignity, opportunity, and community. One connection at a time.',
+                              textAlign: TextAlign.start,
+                              style: FlutterFlowTheme.of(context)
+                                  .bodyLarge
+                                  .override(
+                                    font: GoogleFonts.notoSansJp(
+                                      fontWeight: FlutterFlowTheme.of(context)
+                                          .bodyLarge
+                                          .fontWeight,
+                                      fontStyle: FlutterFlowTheme.of(context)
+                                          .bodyLarge
+                                          .fontStyle,
+                                    ),
+                                    fontSize: 14,
+                                    letterSpacing: 0.0,
+                                    fontWeight: FlutterFlowTheme.of(context)
+                                        .bodyLarge
+                                        .fontWeight,
+                                    fontStyle: FlutterFlowTheme.of(context)
+                                        .bodyLarge
+                                        .fontStyle,
+                                    lineHeight: 1.25,
+                                  ),
+                            ),
+                          ),
+                        ],
+                      ),
+                    ),
+                  ),
+                  wrapWithModel(
+                    model: _model.providerNavBarModel,
+                    updateCallback: () => safeSetState(() {}),
+                    child: ProviderNavBarWidget(),
+                  ),
+                ],
+              ),
+            ),
+          ),
+        ));
+  }
+}
