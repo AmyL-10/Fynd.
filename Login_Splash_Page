@@ -1,0 +1,150 @@
+import '/auth/firebase_auth/auth_util.dart';
+import '/backend/backend.dart';
+import '/backend/schema/enums/enums.dart';
+import '/flutter_flow/flutter_flow_theme.dart';
+import '/flutter_flow/flutter_flow_util.dart';
+import '/flutter_flow/flutter_flow_widgets.dart';
+import '/fynd/components/lottie_loader/lottie_loader_widget.dart';
+import '/fynd/components/nav_app_bars/admin_nav_bar_mvp1/admin_nav_bar_mvp1_widget.dart';
+import '/fynd/components/nav_app_bars/provider_nav_bar/provider_nav_bar_widget.dart';
+import 'dart:ui';
+import '/index.dart';
+import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:collection/collection.dart';
+import 'package:flutter/material.dart';
+import 'package:flutter/scheduler.dart';
+import 'package:flutter_spinkit/flutter_spinkit.dart';
+import 'package:google_fonts/google_fonts.dart';
+import 'package:provider/provider.dart';
+
+import 'login_splash_page_model.dart';
+export 'login_splash_page_model.dart';
+
+class LoginSplashPageWidget extends StatefulWidget {
+  const LoginSplashPageWidget({super.key});
+
+  static String routeName = 'login_splash_page';
+  static String routePath = 'loginSplashPage';
+
+  @override
+  State<LoginSplashPageWidget> createState() => _LoginSplashPageWidgetState();
+}
+
+class _LoginSplashPageWidgetState extends State<LoginSplashPageWidget> {
+  late LoginSplashPageModel _model;
+
+  final scaffoldKey = GlobalKey<ScaffoldState>();
+
+  @override
+  void initState() {
+    super.initState();
+    _model = createModel(context, () => LoginSplashPageModel());
+
+    // On page load action.
+    SchedulerBinding.instance.addPostFrameCallback((_) async {
+      await authManager.refreshUser();
+      _model.qProviders = await queryProvidersRecordOnce(
+        queryBuilder: (providersRecord) => providersRecord.where(
+          'provider_details.provider_ref',
+          isEqualTo: currentUserDocument?.userProviderDetails?.providerRef,
+        ),
+        singleRecord: true,
+      ).then((s) => s.firstOrNull);
+      if (((currentUserDocument?.role == Roles.admin) ||
+              (currentUserDocument?.role == Roles.super_admin)) &&
+          (valueOrDefault<bool>(currentUserDocument?.verified, false) ==
+              true)) {
+        context.goNamed(FyndAdminDashboardWidget.routeName);
+      } else if ((currentUserDocument?.role == Roles.provider) &&
+          (valueOrDefault<bool>(currentUserDocument?.verified, false) ==
+              true)) {
+        if (valueOrDefault<bool>(
+                currentUserDocument?.providerProfileComplete, false) ==
+            true) {
+          context.pushNamed(HomeProviderWidget.routeName);
+        } else {
+          context.pushNamed(ProviderCreateProviderProfileWidget.routeName);
+        }
+      } else if (((currentUserDocument?.role == Roles.admin) ||
+              (currentUserDocument?.role == Roles.super_admin) ||
+              (currentUserDocument?.role == Roles.customer) ||
+              (currentUserDocument?.role == Roles.none) ||
+              (currentUserDocument?.role == Roles.provider)) &&
+          (currentUserEmailVerified == false)) {
+        context.goNamed(VerificationWidget.routeName);
+      } else {
+        _model.role = currentUserDocument?.role?.name;
+        safeSetState(() {});
+      }
+    });
+
+    WidgetsBinding.instance.addPostFrameCallback((_) => safeSetState(() {}));
+  }
+
+  @override
+  void dispose() {
+    _model.dispose();
+
+    super.dispose();
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return Title(
+        title: 'login_splash_page',
+        color: FlutterFlowTheme.of(context).primary.withAlpha(0XFF),
+        child: GestureDetector(
+          onTap: () {
+            FocusScope.of(context).unfocus();
+            FocusManager.instance.primaryFocus?.unfocus();
+          },
+          child: Scaffold(
+            key: scaffoldKey,
+            backgroundColor: FlutterFlowTheme.of(context).primaryBackground,
+            body: SafeArea(
+              top: true,
+              child: Column(
+                mainAxisSize: MainAxisSize.max,
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: [
+                  Flexible(
+                    child: Stack(
+                      children: [
+                        Align(
+                          alignment: AlignmentDirectional(0, 0),
+                          child: wrapWithModel(
+                            model: _model.lottieLoaderModel,
+                            updateCallback: () => safeSetState(() {}),
+                            child: LottieLoaderWidget(),
+                          ),
+                        ),
+                        if (_model.role != null && _model.role != '')
+                          Builder(
+                            builder: (context) {
+                              if (currentUserDocument?.role == Roles.provider) {
+                                return wrapWithModel(
+                                  model: _model.providerNavBarModel,
+                                  updateCallback: () => safeSetState(() {}),
+                                  child: ProviderNavBarWidget(),
+                                );
+                              } else {
+                                return wrapWithModel(
+                                  model: _model.adminNavBarMvp1Model,
+                                  updateCallback: () => safeSetState(() {}),
+                                  child: AdminNavBarMvp1Widget(
+                                    tabSwitching: (tab) async {},
+                                  ),
+                                );
+                              }
+                            },
+                          ),
+                      ],
+                    ),
+                  ),
+                ],
+              ),
+            ),
+          ),
+        ));
+  }
+}
